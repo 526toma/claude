@@ -1,0 +1,12 @@
+{
+  "name": "line-app",
+  "version": "1.0.0",
+  "description": "LINE-like chat application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

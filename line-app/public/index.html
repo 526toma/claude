@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINE風チャット</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="my-profile">
+          <div class="avatar my-avatar">Me</div>
+          <span class="my-name">あなた</span>
+        </div>
+        <div class="header-icons">
+          <button class="icon-btn" title="検索">🔍</button>
+          <button class="icon-btn" title="新規">✏️</button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" placeholder="検索" id="searchInput" />
+      </div>
+
+      <ul class="contact-list" id="contactList"></ul>
+    </aside>
+
+    <!-- Main chat area -->
+    <main class="chat-area" id="chatArea">
+      <div class="no-chat-selected">
+        <div class="no-chat-icon">💬</div>
+        <p>トークを選択してください</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
