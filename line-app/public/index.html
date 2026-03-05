@@ -7,17 +7,28 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal">
+      <div class="modal-logo">💬</div>
+      <h2 class="modal-title">LINE風チャット</h2>
+      <p class="modal-sub">表示名を入力してください</p>
+      <input type="text" id="nameInput" class="modal-input" placeholder="名前" maxlength="20" />
+      <button id="startBtn" class="modal-btn">はじめる</button>
+    </div>
+  </div>
+
+  <div class="app" id="mainApp" style="display:none">
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="my-profile">
-          <div class="avatar my-avatar">Me</div>
-          <span class="my-name">あなた</span>
+          <div class="avatar my-avatar" id="myAvatar">Me</div>
+          <span class="my-name" id="myName">あなた</span>
         </div>
         <div class="header-icons">
           <button class="icon-btn" title="検索">🔍</button>
-          <button class="icon-btn" title="新規">✏️</button>
         </div>
       </div>
 
@@ -25,7 +36,9 @@
         <input type="text" placeholder="検索" id="searchInput" />
       </div>
 
-      <ul class="contact-list" id="contactList"></ul>
+      <ul class="contact-list" id="contactList">
+        <li class="contact-empty">ユーザーを待っています...</li>
+      </ul>
     </aside>
 
     <!-- Main chat area -->
@@ -37,6 +50,6 @@
     </main>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

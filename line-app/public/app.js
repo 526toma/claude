@@ -1,94 +1,169 @@
-const ws = new WebSocket(`ws://${location.host}`);
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  onSnapshot,
+  addDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+  updateDoc,
+  limit,
+} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-let myId = null;
-let contacts = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyDBXAHJ0XOxM0Hp633izVu59BRvIwkxoLI",
+  authDomain: "grumpy-5ebb2.firebaseapp.com",
+  projectId: "grumpy-5ebb2",
+  storageBucket: "grumpy-5ebb2.firebasestorage.app",
+  messagingSenderId: "130090012669",
+  appId: "1:130090012669:web:d27d76ca7b18c07fa71394",
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+// ===== State =====
+let myId    = localStorage.getItem('chatUserId');
+let myName  = localStorage.getItem('chatUserName');
+let myColor = localStorage.getItem('chatUserColor');
 let activeContact = null;
-const chatHistory = {}; // contactId -> [{from, text, timestamp}]
-const unreadCounts = {};
+let unsubscribeMessages = null;
+let unreadCounts = {};
+let lastMsgCache = {};
 
-// ===== WebSocket =====
-ws.addEventListener('message', (e) => {
-  const msg = JSON.parse(e.data);
+const COLORS = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FF8C42','#A78BFA','#F59E0B','#10B981'];
 
-  if (msg.type === 'init') {
-    myId = msg.clientId;
-    contacts = msg.contacts;
-    contacts.forEach(c => {
-      chatHistory[c.id] = [];
-      unreadCounts[c.id] = 0;
+function randomColor() {
+  return COLORS[Math.floor(Math.random() * COLORS.length)];
+}
+function generateId() {
+  return Math.random().toString(36).slice(2,9) + Date.now().toString(36);
+}
+function chatId(a, b) {
+  return [a, b].sort().join('__');
+}
+function formatTime(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+}
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function initials(name) {
+  return name.slice(0, 2);
+}
+
+// ===== Login =====
+const loginModal = document.getElementById('loginModal');
+const mainApp    = document.getElementById('mainApp');
+const nameInput  = document.getElementById('nameInput');
+const startBtn   = document.getElementById('startBtn');
+
+if (myId && myName) {
+  showApp();
+} else {
+  loginModal.style.display = 'flex';
+}
+
+startBtn.addEventListener('click', login);
+nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+async function login() {
+  const name = nameInput.value.trim();
+  if (!name) { nameInput.focus(); return; }
+
+  myId    = generateId();
+  myName  = name;
+  myColor = randomColor();
+
+  localStorage.setItem('chatUserId',   myId);
+  localStorage.setItem('chatUserName', myName);
+  localStorage.setItem('chatUserColor', myColor);
+
+  await setDoc(doc(db, 'users', myId), {
+    name: myName,
+    color: myColor,
+    lastSeen: serverTimestamp(),
+    online: true,
+  });
+
+  showApp();
+}
+
+function showApp() {
+  loginModal.style.display = 'none';
+  mainApp.style.display    = 'flex';
+
+  document.getElementById('myName').textContent = myName;
+  document.getElementById('myAvatar').textContent = initials(myName);
+  document.getElementById('myAvatar').style.background = myColor || '#06C755';
+
+  // Update presence
+  setDoc(doc(db, 'users', myId), {
+    name: myName,
+    color: myColor,
+    lastSeen: serverTimestamp(),
+    online: true,
+  }, { merge: true });
+
+  // Mark offline on unload
+  window.addEventListener('beforeunload', () => {
+    navigator.sendBeacon('/noop', JSON.stringify({ uid: myId }));
+    updateDoc(doc(db, 'users', myId), { online: false });
+  });
+
+  listenUsers();
+  setupSearch();
+}
+
+// ===== User list =====
+function listenUsers() {
+  onSnapshot(collection(db, 'users'), (snap) => {
+    const users = [];
+    snap.forEach(d => {
+      if (d.id !== myId) users.push({ id: d.id, ...d.data() });
     });
-    renderContactList();
-    return;
-  }
-
-  if (msg.type === 'chat') {
-    const contactId = msg.isBot ? msg.from : msg.from;
-    if (!chatHistory[contactId]) chatHistory[contactId] = [];
-    chatHistory[contactId].push({ from: msg.from, text: msg.text, timestamp: msg.timestamp });
-
-    // Remove typing indicator
-    removeTypingIndicator();
-
-    if (activeContact && activeContact.id === contactId) {
-      appendMessage({ from: msg.from, text: msg.text, timestamp: msg.timestamp });
-      scrollToBottom();
-    } else {
-      unreadCounts[contactId] = (unreadCounts[contactId] || 0) + 1;
-    }
-    updateContactLastMsg(contactId, msg.text, msg.timestamp);
-  }
-});
-
-// ===== Render contact list =====
-function renderContactList() {
-  const list = document.getElementById('contactList');
-  list.innerHTML = '';
-  contacts.forEach(c => {
-    const li = document.createElement('li');
-    li.className = 'contact-item' + (activeContact?.id === c.id ? ' active' : '');
-    li.dataset.id = c.id;
-    li.innerHTML = `
-      <div class="contact-avatar-wrap">
-        <div class="avatar" style="background:${c.color}">${c.avatar}</div>
-        <span class="status-dot ${c.status}"></span>
-      </div>
-      <div class="contact-info">
-        <div class="contact-name">${c.name}</div>
-        <div class="contact-last-msg" id="last-${c.id}">${getLastMsg(c.id)}</div>
-      </div>
-      <div class="contact-meta">
-        <span class="contact-time" id="time-${c.id}">${getLastTime(c.id)}</span>
-        ${unreadCounts[c.id] ? `<span class="unread-badge" id="badge-${c.id}">${unreadCounts[c.id]}</span>` : `<span id="badge-${c.id}"></span>`}
-      </div>
-    `;
-    li.addEventListener('click', () => openChat(c));
-    list.appendChild(li);
+    renderContacts(users);
   });
 }
 
-function getLastMsg(id) {
-  const msgs = chatHistory[id];
-  if (!msgs || msgs.length === 0) return 'トークを始めよう';
-  return msgs[msgs.length - 1].text;
-}
-
-function getLastTime(id) {
-  const msgs = chatHistory[id];
-  if (!msgs || msgs.length === 0) return '';
-  return formatTime(msgs[msgs.length - 1].timestamp);
-}
-
-function updateContactLastMsg(contactId, text, timestamp) {
-  const el = document.getElementById(`last-${contactId}`);
-  const te = document.getElementById(`time-${contactId}`);
-  const badge = document.getElementById(`badge-${contactId}`);
-  if (el) el.textContent = text;
-  if (te) te.textContent = formatTime(timestamp);
-  if (badge && activeContact?.id !== contactId) {
-    const count = unreadCounts[contactId] || 0;
-    badge.textContent = count > 0 ? count : '';
-    badge.className = count > 0 ? 'unread-badge' : '';
+function renderContacts(users) {
+  const list = document.getElementById('contactList');
+  if (users.length === 0) {
+    list.innerHTML = '<li class="contact-empty">他のユーザーがいません</li>';
+    return;
   }
+  list.innerHTML = '';
+  users.forEach(u => {
+    const cid = chatId(myId, u.id);
+    const lastMsg = lastMsgCache[u.id] || {};
+    const unread  = unreadCounts[u.id] || 0;
+    const isActive = activeContact?.id === u.id;
+
+    const li = document.createElement('li');
+    li.className = 'contact-item' + (isActive ? ' active' : '');
+    li.dataset.id = u.id;
+    li.innerHTML = `
+      <div class="contact-avatar-wrap">
+        <div class="avatar" style="background:${u.color || '#888'}">${initials(u.name)}</div>
+        <span class="status-dot ${u.online ? 'online' : 'offline'}"></span>
+      </div>
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(u.name)}</div>
+        <div class="contact-last-msg">${lastMsg.text ? escapeHtml(lastMsg.text) : 'トークを始めよう'}</div>
+      </div>
+      <div class="contact-meta">
+        <span class="contact-time">${formatTime(lastMsg.ts) || ''}</span>
+        ${unread ? `<span class="unread-badge">${unread}</span>` : ''}
+      </div>
+    `;
+    li.addEventListener('click', () => openChat(u));
+    list.appendChild(li);
+  });
 }
 
 // ===== Open chat =====
@@ -96,44 +171,51 @@ function openChat(contact) {
   activeContact = contact;
   unreadCounts[contact.id] = 0;
 
+  if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
+
   document.querySelectorAll('.contact-item').forEach(el => el.classList.remove('active'));
   const li = document.querySelector(`.contact-item[data-id="${contact.id}"]`);
   if (li) li.classList.add('active');
 
-  const badge = document.getElementById(`badge-${contact.id}`);
-  if (badge) { badge.textContent = ''; badge.className = ''; }
-
   const chatArea = document.getElementById('chatArea');
   chatArea.innerHTML = `
     <div class="chat-header">
-      <div class="avatar" style="background:${contact.color}">${contact.avatar}</div>
+      <div class="avatar" style="background:${contact.color || '#888'}">${initials(contact.name)}</div>
       <div class="chat-header-info">
-        <div class="chat-header-name">${contact.name}</div>
-        <div class="chat-header-status ${contact.status}">${statusLabel(contact.status)}</div>
-      </div>
-      <div class="chat-header-actions">
-        <button class="icon-btn" title="通話">📞</button>
-        <button class="icon-btn" title="ビデオ">📹</button>
-        <button class="icon-btn" title="メニュー">⋮</button>
+        <div class="chat-header-name">${escapeHtml(contact.name)}</div>
+        <div class="chat-header-status ${contact.online ? 'online' : 'offline'}">${contact.online ? 'オンライン' : 'オフライン'}</div>
       </div>
     </div>
     <div class="messages" id="messages">
       <div class="date-divider">今日</div>
     </div>
     <div class="chat-input-area">
-      <button class="input-btn" title="スタンプ">😊</button>
-      <button class="input-btn" title="画像">📷</button>
+      <button class="input-btn">😊</button>
       <textarea class="msg-input" id="msgInput" placeholder="メッセージを入力..." rows="1"></textarea>
       <button class="send-btn" id="sendBtn" disabled>➤</button>
     </div>
   `;
 
-  // Render history
-  (chatHistory[contact.id] || []).forEach(m => appendMessage(m));
-  scrollToBottom();
+  const cid = chatId(myId, contact.id);
+  const messagesRef = collection(db, 'chats', cid, 'messages');
+  const q = query(messagesRef, orderBy('timestamp'), limit(100));
 
-  // Input events
-  const input = document.getElementById('msgInput');
+  unsubscribeMessages = onSnapshot(q, (snap) => {
+    const messagesEl = document.getElementById('messages');
+    if (!messagesEl) return;
+    snap.docChanges().forEach(change => {
+      if (change.type === 'added') {
+        const data = change.doc.data();
+        appendMessage(data, contact);
+
+        // Update last msg cache
+        lastMsgCache[contact.id] = { text: data.text, ts: data.timestamp };
+      }
+    });
+    scrollToBottom();
+  });
+
+  const input   = document.getElementById('msgInput');
   const sendBtn = document.getElementById('sendBtn');
 
   input.addEventListener('input', () => {
@@ -142,131 +224,71 @@ function openChat(contact) {
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
   });
 
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(contact); }
   });
 
-  sendBtn.addEventListener('click', sendMessage);
+  sendBtn.addEventListener('click', () => sendMessage(contact));
   input.focus();
 }
 
-function statusLabel(s) {
-  if (s === 'online')  return 'オンライン';
-  if (s === 'away')    return '離席中';
-  if (s === 'offline') return 'オフライン';
-  return '';
-}
-
-// ===== Send message =====
-function sendMessage() {
+// ===== Send =====
+async function sendMessage(contact) {
   const input = document.getElementById('msgInput');
-  const text = input.value.trim();
-  if (!text || !activeContact) return;
-
-  const timestamp = Date.now();
-  const msg = { from: myId, text, timestamp };
-
-  if (!chatHistory[activeContact.id]) chatHistory[activeContact.id] = [];
-  chatHistory[activeContact.id].push(msg);
-
-  appendMessage(msg);
-  scrollToBottom();
-  updateContactLastMsg(activeContact.id, text, timestamp);
-
-  ws.send(JSON.stringify({ type: 'chat', to: activeContact.id, text }));
+  const text  = input.value.trim();
+  if (!text || !contact) return;
 
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
 
-  // Show typing indicator
-  setTimeout(() => showTypingIndicator(), 600);
+  const cid = chatId(myId, contact.id);
+  await addDoc(collection(db, 'chats', cid, 'messages'), {
+    from: myId,
+    fromName: myName,
+    text,
+    timestamp: serverTimestamp(),
+  });
 }
 
-// ===== Append message bubble =====
-function appendMessage({ from, text, timestamp }) {
+// ===== Append message =====
+function appendMessage(data, contact) {
   const messages = document.getElementById('messages');
   if (!messages) return;
 
-  const isSent = from === myId;
-  const contact = contacts.find(c => c.id === from);
-
+  const isSent = data.from === myId;
   const row = document.createElement('div');
   row.className = `msg-row ${isSent ? 'sent' : 'received'}`;
 
-  const avatarHtml = !isSent && contact
-    ? `<div class="msg-avatar" style="background:${contact.color}">${contact.avatar}</div>`
+  const color = isSent ? myColor : (contact?.color || '#888');
+  const name  = isSent ? myName  : (contact?.name  || data.fromName || '?');
+
+  const avatarHtml = !isSent
+    ? `<div class="msg-avatar" style="background:${color}">${initials(name)}</div>`
     : '';
 
   row.innerHTML = `
     ${avatarHtml}
     <div class="msg-content">
-      <div class="bubble">${escapeHtml(text)}</div>
-      <span class="msg-time">${formatTime(timestamp)}</span>
+      <div class="bubble">${escapeHtml(data.text)}</div>
+      <span class="msg-time">${formatTime(data.timestamp)}</span>
     </div>
   `;
-
   messages.appendChild(row);
 }
 
-// ===== Typing indicator =====
-function showTypingIndicator() {
-  const messages = document.getElementById('messages');
-  if (!messages || !activeContact) return;
-
-  removeTypingIndicator();
-  const contact = activeContact;
-
-  const el = document.createElement('div');
-  el.className = 'msg-row received';
-  el.id = 'typingIndicator';
-  el.innerHTML = `
-    <div class="msg-avatar" style="background:${contact.color}">${contact.avatar}</div>
-    <div class="msg-content">
-      <div class="bubble" style="padding:12px 16px">
-        <div class="typing-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    </div>
-  `;
-  messages.appendChild(el);
-  scrollToBottom();
-}
-
-function removeTypingIndicator() {
-  const el = document.getElementById('typingIndicator');
-  if (el) el.remove();
-}
-
-// ===== Helpers =====
 function scrollToBottom() {
   const messages = document.getElementById('messages');
   if (messages) messages.scrollTop = messages.scrollHeight;
 }
 
-function formatTime(ts) {
-  const d = new Date(ts);
-  return d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// Search filter
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase();
-      document.querySelectorAll('.contact-item').forEach(el => {
-        const name = el.querySelector('.contact-name').textContent.toLowerCase();
-        el.style.display = name.includes(q) ? '' : 'none';
-      });
+// ===== Search =====
+function setupSearch() {
+  document.getElementById('searchInput').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('.contact-item').forEach(el => {
+      const name = el.querySelector('.contact-name')?.textContent.toLowerCase() || '';
+      el.style.display = name.includes(q) ? '' : 'none';
     });
-  }
-});
+  });
+}
