@@ -43,7 +43,7 @@
   <header class="header">
     <div class="header-inner">
       <span class="header-title" id="header-title">ホーム</span>
-      <div class="header-logo">🐦</div>
+      <div class="header-avatar" id="header-avatar" onclick="toggleProfileMenu()">?</div>
     </div>
   </header>
 
@@ -153,6 +153,16 @@
     </button>
   </nav>
 
+</div>
+
+<!-- Profile Menu -->
+<div id="profile-menu" class="profile-menu hidden" onclick="closeProfileMenu()">
+  <div class="profile-menu-card" onclick="event.stopPropagation()">
+    <div class="profile-menu-avatar" id="menu-avatar">?</div>
+    <div class="profile-menu-name" id="menu-name">-</div>
+    <div class="profile-menu-username" id="menu-username">@-</div>
+    <button class="profile-menu-logout" onclick="logoutUser()">ログアウト</button>
+  </div>
 </div>
 
 <!-- Loading Overlay -->
