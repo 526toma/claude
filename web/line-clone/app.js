@@ -193,7 +193,7 @@ window.openChat = (id) => {
   // リスト画面を左にずらしながらチャットを開く（LINEライクなアニメーション）
   const listScreen = document.getElementById("screen-list");
   listScreen.classList.add("push-left");
-  listScreen.style.visibility = "hidden";
+  listScreen.style.visibility = ""; // スライド中は見えるようにする
   document.getElementById("screen-chat").classList.add("open");
   // Scroll to bottom
   setTimeout(() => {
@@ -203,7 +203,7 @@ window.openChat = (id) => {
 };
 
 window.closeChat = () => {
-  // 閉じる前にリスト画面を元の位置に戻す（アニメーションと同期）
+  document.getElementById("input-text").blur(); // キーボードを閉じる
   const listScreen = document.getElementById("screen-list");
   listScreen.style.visibility = "";
   listScreen.classList.remove("push-left");
@@ -307,6 +307,17 @@ window.sendMessage = () => {
     area.scrollTop = area.scrollHeight;
   }, 30);
 };
+
+// キーボード表示時にリスト画面を隠す（背後が透けないよう）
+document.getElementById("input-text").addEventListener("focus", () => {
+  document.getElementById("screen-list").style.visibility = "hidden";
+});
+document.getElementById("input-text").addEventListener("blur", () => {
+  // チャットが開いている間だけ隠す（閉じた後は不要）
+  if (!document.getElementById("screen-chat").classList.contains("open")) {
+    document.getElementById("screen-list").style.visibility = "";
+  }
+});
 
 // Enter to send
 document.getElementById("input-text").addEventListener("keydown", (e) => {
