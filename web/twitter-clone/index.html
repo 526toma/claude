@@ -165,6 +165,22 @@
   </div>
 </div>
 
+<!-- User Card Modal -->
+<div id="user-card-modal" class="user-card-modal hidden" onclick="closeUserCard()">
+  <div class="user-card-popup" onclick="event.stopPropagation()">
+    <div class="user-card-popup-avatar" id="ucard-avatar">?</div>
+    <div class="user-card-popup-name" id="ucard-name">-</div>
+    <div class="user-card-popup-username" id="ucard-username">@-</div>
+    <div class="user-card-popup-stats">
+      <div class="stat"><span id="ucard-tweets">0</span><small>ツイート</small></div>
+      <div class="stat"><span id="ucard-following">0</span><small>フォロー</small></div>
+      <div class="stat"><span id="ucard-followers">0</span><small>フォロワー</small></div>
+    </div>
+    <button class="btn-follow" id="ucard-follow-btn" onclick="toggleFollowFromCard()">フォローする</button>
+    <button class="btn-outline" id="ucard-profile-btn" onclick="goToUserProfile()">プロフィールを見る</button>
+  </div>
+</div>
+
 <!-- Comment Modal -->
 <div id="comment-modal" class="comment-modal hidden" onclick="closeComments()">
   <div class="comment-sheet" onclick="event.stopPropagation()">
