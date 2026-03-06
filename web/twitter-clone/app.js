@@ -330,7 +330,7 @@ function buildTweetCard(id, data) {
   const card = document.createElement("div");
   card.className = "tweet-card";
   card.innerHTML = `
-    <div class="tweet-avatar" style="background:${color}" onclick="viewUserProfile('${data.uid}')">${initial}</div>
+    <div class="tweet-avatar" style="background:${color}" onclick="event.stopPropagation();showUserCard('${data.uid}')">${initial}</div>
     <div class="tweet-right">
       <div class="tweet-header">
         <span class="tweet-name" onclick="viewUserProfile('${data.uid}')">${escHtml(data.displayName)}</span>
@@ -359,6 +359,74 @@ function buildTweetCard(id, data) {
   `;
   return card;
 }
+
+// ── User Card Popup ──
+let userCardUid = null;
+let ucardFollowing = false;
+
+window.showUserCard = async (uid) => {
+  if (!uid) return;
+  userCardUid = uid;
+  document.getElementById("user-card-modal").classList.remove("hidden");
+
+  const data = await fetchUserData(uid);
+  if (!data) return;
+
+  const av = document.getElementById("ucard-avatar");
+  av.textContent = (data.displayName || "?")[0].toUpperCase();
+  av.style.background = getAvatarColor(uid);
+  document.getElementById("ucard-name").textContent = data.displayName || "-";
+  document.getElementById("ucard-username").textContent = "@" + (data.username || "-");
+  document.getElementById("ucard-tweets").textContent = data.tweetCount || 0;
+  document.getElementById("ucard-following").textContent = (data.following || []).length;
+  document.getElementById("ucard-followers").textContent = (data.followers || []).length;
+
+  const followBtn = document.getElementById("ucard-follow-btn");
+  if (uid === currentUser?.uid) {
+    followBtn.style.display = "none";
+  } else {
+    followBtn.style.display = "";
+    const myData = await fetchUserData(currentUser.uid);
+    ucardFollowing = (myData?.following || []).includes(uid);
+    updateUcardFollowBtn();
+  }
+};
+
+function updateUcardFollowBtn() {
+  const btn = document.getElementById("ucard-follow-btn");
+  if (!btn) return;
+  btn.textContent = ucardFollowing ? "フォロー中" : "フォローする";
+  btn.classList.toggle("following", ucardFollowing);
+}
+
+window.toggleFollowFromCard = async () => {
+  if (!currentUser || !userCardUid || userCardUid === currentUser.uid) return;
+  const myRef = doc(db, "users", currentUser.uid);
+  const theirRef = doc(db, "users", userCardUid);
+  if (ucardFollowing) {
+    await updateDoc(myRef, { following: arrayRemove(userCardUid) });
+    await updateDoc(theirRef, { followers: arrayRemove(currentUser.uid) });
+    ucardFollowing = false;
+  } else {
+    await updateDoc(myRef, { following: arrayUnion(userCardUid) });
+    await updateDoc(theirRef, { followers: arrayUnion(currentUser.uid) });
+    ucardFollowing = true;
+  }
+  updateUcardFollowBtn();
+  // Sync with followers count display
+  const theirData = await fetchUserData(userCardUid);
+  document.getElementById("ucard-followers").textContent = (theirData?.followers || []).length;
+};
+
+window.goToUserProfile = () => {
+  closeUserCard();
+  viewUserProfile(userCardUid);
+};
+
+window.closeUserCard = () => {
+  document.getElementById("user-card-modal").classList.add("hidden");
+  userCardUid = null;
+};
 
 // ── User Profile View ──
 window.viewUserProfile = async (uid) => {

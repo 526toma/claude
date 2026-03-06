@@ -85,21 +85,15 @@
 
     <!-- Profile Tab -->
     <div id="tab-profile" class="tab-content hidden">
-      <div class="profile-header">
-        <div class="profile-banner"></div>
-        <div class="profile-info">
-          <div class="profile-avatar-large" id="profile-avatar-large">?</div>
-          <div class="profile-meta">
-            <div class="profile-name" id="profile-display-name">-</div>
-            <div class="profile-username" id="profile-username-display">@-</div>
-            <div class="profile-joined" id="profile-joined">-</div>
-          </div>
-          <div class="profile-stats">
-            <div class="stat"><span id="profile-tweet-count">0</span><small>ツイート</small></div>
-            <div class="stat"><span id="profile-following-count">0</span><small>フォロー中</small></div>
-            <div class="stat"><span id="profile-followers-count">0</span><small>フォロワー</small></div>
-          </div>
-          <button class="btn-outline" onclick="logoutUser()">ログアウト</button>
+      <div class="my-profile-header">
+        <div class="my-profile-avatar" id="profile-avatar-large">?</div>
+        <div class="my-profile-name" id="profile-display-name">-</div>
+        <div class="my-profile-username" id="profile-username-display">@-</div>
+        <div class="my-profile-joined" id="profile-joined">-</div>
+        <div class="profile-stats" style="justify-content:center">
+          <div class="stat"><span id="profile-tweet-count">0</span><small>ツイート</small></div>
+          <div class="stat"><span id="profile-following-count">0</span><small>フォロー中</small></div>
+          <div class="stat"><span id="profile-followers-count">0</span><small>フォロワー</small></div>
         </div>
       </div>
       <div class="divider"></div>
@@ -162,6 +156,22 @@
     <div class="profile-menu-name" id="menu-name">-</div>
     <div class="profile-menu-username" id="menu-username">@-</div>
     <button class="profile-menu-logout" onclick="logoutUser()">ログアウト</button>
+  </div>
+</div>
+
+<!-- User Card Modal -->
+<div id="user-card-modal" class="user-card-modal hidden" onclick="closeUserCard()">
+  <div class="user-card-popup" onclick="event.stopPropagation()">
+    <div class="user-card-popup-avatar" id="ucard-avatar">?</div>
+    <div class="user-card-popup-name" id="ucard-name">-</div>
+    <div class="user-card-popup-username" id="ucard-username">@-</div>
+    <div class="user-card-popup-stats">
+      <div class="stat"><span id="ucard-tweets">0</span><small>ツイート</small></div>
+      <div class="stat"><span id="ucard-following">0</span><small>フォロー</small></div>
+      <div class="stat"><span id="ucard-followers">0</span><small>フォロワー</small></div>
+    </div>
+    <button class="btn-follow" id="ucard-follow-btn" onclick="toggleFollowFromCard()">フォローする</button>
+    <button class="btn-outline" id="ucard-profile-btn" onclick="goToUserProfile()">プロフィールを見る</button>
   </div>
 </div>
 
