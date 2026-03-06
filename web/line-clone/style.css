@@ -333,3 +333,13 @@ button { background: none; border: none; cursor: pointer; padding: 0; }
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 2px; }
+
+/* ── PWA（ホーム画面追加）モード：下に余裕を持たせる ── */
+@media (display-mode: standalone) {
+  .input-bar {
+    padding-bottom: calc(16px + var(--safe-bottom));
+  }
+  .bottom-nav {
+    padding-bottom: calc(8px + var(--safe-bottom));
+  }
+}
