@@ -219,8 +219,11 @@ function openChat(contact) {
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
   });
 
+  let isComposing = false;
+  input.addEventListener('compositionstart', () => { isComposing = true; });
+  input.addEventListener('compositionend',   () => { isComposing = false; });
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
+    if (e.key === 'Enter' && !e.shiftKey && !isComposing) { e.preventDefault(); doSend(); }
   });
 
   sendBtn.addEventListener('click', doSend);

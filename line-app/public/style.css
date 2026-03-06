@@ -19,15 +19,18 @@
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+html { height: 100%; }
+
 body {
   font-family: var(--font);
   background: var(--bg);
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
 /* ===== LOGIN ===== */
@@ -493,15 +496,15 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   body {
-    align-items: stretch;
-    justify-content: stretch;
+    align-items: flex-start;
+    justify-content: flex-start;
     background: var(--surface);
   }
 
   .app {
-    width: 100%;
+    width: 100vw;
     height: 100dvh;
     border-radius: 0;
     border: none;
