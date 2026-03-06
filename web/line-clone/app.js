@@ -374,5 +374,22 @@ function escHtml(s) {
   });
 })();
 
+// ── Swipe right to close chat ──
+(function () {
+  const chatScreen = document.getElementById("screen-chat");
+  let startX = 0, startY = 0;
+
+  chatScreen.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  chatScreen.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = Math.abs(e.changedTouches[0].clientY - startY);
+    if (dx > 60 && dy < 80) closeChat();
+  }, { passive: true });
+})();
+
 // ── Init ──
 renderChatList();
