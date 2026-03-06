@@ -329,18 +329,17 @@ function escHtml(s) {
   const chatScreen = document.getElementById("screen-chat");
 
   function adjust() {
-    chatScreen.style.top = vv.offsetTop + "px";
-    chatScreen.style.height = vv.height + "px";
-    chatScreen.style.bottom = "auto";
-    // キーボードを開いたまま最新メッセージが見えるようにスクロール
+    // キーボードの高さ = レイアウトビューポート - ビジュアルビューポート
+    const keyboardHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    // 高さは変えず padding-bottom でコンテンツをキーボード分押し上げる
+    // → 画面は常に inset:0 を維持するので背後の画面が透けない
+    chatScreen.style.paddingBottom = keyboardHeight > 0 ? keyboardHeight + "px" : "";
     const area = document.getElementById("messages-area");
     area.scrollTop = area.scrollHeight;
   }
 
   function reset() {
-    chatScreen.style.top = "";
-    chatScreen.style.height = "";
-    chatScreen.style.bottom = "";
+    chatScreen.style.paddingBottom = "";
   }
 
   vv.addEventListener("resize", () => {
