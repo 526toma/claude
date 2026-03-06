@@ -340,6 +340,7 @@ button { background: none; border: none; cursor: pointer; padding: 0; }
     padding-bottom: calc(16px + var(--safe-bottom));
   }
   .bottom-nav {
-    padding-bottom: calc(8px + var(--safe-bottom));
+    padding-bottom: calc(20px + var(--safe-bottom));
+    height: calc(var(--nav-h) + 20px + var(--safe-bottom));
   }
 }
