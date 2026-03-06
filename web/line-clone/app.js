@@ -17,20 +17,20 @@ const DUMMY_CHATS = [
   {
     id: "1",
     name: "メモ",
-    preview: "// Import the functions you need from the SDKs you need import { initializeApp } fr...",
+    preview: "ダミーテキストです。メモの内容がここに表示されます。",
     time: "18:51",
     unread: 1,
     color: "#8B4513",
     icon: "🐻",
     mute: false,
     messages: [
-      { type: "mine", text: "// Import the functions you need from the SDKs you need import { initializeApp } from 'firebase/app'", time: "18:51" }
+      { type: "mine", text: "ダミーテキストです。メモの内容がここに表示されます。", time: "18:51" }
     ]
   },
   {
     id: "2",
-    name: "齊藤陽子",
-    preview: "あと収入",
+    name: "山田 花子",
+    preview: "了解です！またよろしくね",
     time: "16:04",
     unread: 0,
     color: "#c0c0c0",
@@ -38,24 +38,24 @@ const DUMMY_CHATS = [
     mute: false,
     messages: [
       { date: "2/23(月)" },
-      { type: "theirs", text: "無洗米２キロくらいおねがいします", time: "16:52" },
-      { type: "mine", text: "なぬ", time: "16:55", read: true },
+      { type: "theirs", text: "今日の予定どうする？", time: "16:52" },
+      { type: "mine", text: "夕方なら大丈夫だよ", time: "16:55", read: true },
       { date: "3/4(水)" },
-      { type: "mine", text: "確定申告で収入をいくらにしたか教えてね", time: "14:20", read: true },
+      { type: "mine", text: "先週の件、確認できた？", time: "14:20", read: true },
       { date: "昨日" },
-      { type: "mine", text: "確定申告で収入をいくらにしたか教えてね", time: "10:57", read: true },
-      { type: "mine", text: "明日でいいよ", time: "10:57", read: true },
-      { type: "theirs", text: "明日計算してみます", time: "11:48" },
+      { type: "mine", text: "もし時間あれば教えてね", time: "10:57", read: true },
+      { type: "mine", text: "急がないから大丈夫だよ", time: "10:57", read: true },
+      { type: "theirs", text: "明日確認してみます！", time: "11:48" },
       { date: "今日" },
-      { type: "mine", isFile: true, fileName: "医療費情報_2026030...537249.pdf", fileMeta: "有効期間：〜3/13 16:03　サイズ：104.58 kB", time: "16:03", read: true },
-      { type: "mine", text: "マイナポータルからダウンロードできるこれをようちゃんのと息子のをください", time: "16:04", read: true },
-      { type: "mine", text: "あと収入", time: "16:04", read: true }
+      { type: "mine", isFile: true, fileName: "資料_20260306.pdf", fileMeta: "有効期間：〜3/13 16:03　サイズ：104.58 kB", time: "16:03", read: true },
+      { type: "mine", text: "これ見ておいてもらえると助かります", time: "16:04", read: true },
+      { type: "mine", text: "了解です！またよろしくね", time: "16:04", read: true }
     ]
   },
   {
     id: "3",
-    name: "広島市",
-    preview: "『広島駅×猿猴川プロジェクト』水辺空間活用社会実験「ミズベビラキ vol.2」【開催日時】…",
+    name: "〇〇市 公式",
+    preview: "【お知らせ】春のイベントを開催します。詳細はこちらをご確認ください…",
     time: "15:00",
     unread: 0,
     color: "#1a5fb4",
@@ -63,13 +63,13 @@ const DUMMY_CHATS = [
     mute: true,
     messages: [
       { date: "今日" },
-      { type: "theirs", text: "『広島駅×猿猴川プロジェクト』水辺空間活用社会実験「ミズベビラキ vol.2」【開催日時】2026年3月20日(土)〜21日(日) 10:00〜20:00", time: "15:00" }
+      { type: "theirs", text: "【お知らせ】春のイベントを開催します。【開催日時】2026年3月20日(土)〜21日(日) 10:00〜20:00。詳細はホームページをご覧ください。", time: "15:00" }
     ]
   },
   {
     id: "4",
-    name: "横川商店街連合会",
-    preview: "岡田たかおが写真を送信しました",
+    name: "△△商店街グループ",
+    preview: "田中さんが写真を送信しました",
     time: "13:50",
     unread: 148,
     color: "#e74c3c",
@@ -77,13 +77,13 @@ const DUMMY_CHATS = [
     mute: false,
     messages: [
       { date: "今日" },
-      { type: "theirs", senderName: "岡田たかお", text: "写真を送信しました", time: "13:50" }
+      { type: "theirs", senderName: "田中さん", text: "写真を送信しました", time: "13:50" }
     ]
   },
   {
     id: "5",
-    name: "西野 知世",
-    preview: "北九州は今日は朝から雨。 明日は次男の卒業式。 今日は新しい助手さんの面接でした。…",
+    name: "鈴木 さん",
+    preview: "今日は朝から雨だね。 明日は晴れるといいな。 また連絡します。…",
     time: "13:39",
     unread: 0,
     color: "#7f8c8d",
@@ -91,13 +91,13 @@ const DUMMY_CHATS = [
     mute: true,
     messages: [
       { date: "今日" },
-      { type: "theirs", text: "北九州は今日は朝から雨。\n明日は次男の卒業式。\n今日は新しい助手さんの面接でした。", time: "13:39" }
+      { type: "theirs", text: "今日は朝から雨だね。\n明日は晴れるといいな。\nまた連絡します。", time: "13:39" }
     ]
   },
   {
     id: "6",
-    name: "アクトレップ・スポーツクラブ",
-    preview: "アクトレップ・スポーツクラブが写真を送信しました",
+    name: "〇〇スポーツクラブ",
+    preview: "〇〇スポーツクラブが写真を送信しました",
     time: "7:30",
     unread: 0,
     color: "#2d5a1b",
@@ -105,13 +105,13 @@ const DUMMY_CHATS = [
     mute: false,
     messages: [
       { date: "今日" },
-      { type: "theirs", text: "アクトレップ・スポーツクラブが写真を送信しました", time: "7:30" }
+      { type: "theirs", text: "〇〇スポーツクラブが写真を送信しました", time: "7:30" }
     ]
   },
   {
     id: "7",
-    name: "ミッチさん",
-    preview: "寂しいかな？でも家にいるといつまでも甘えて、身の回りのこと全然できない気がして",
+    name: "友人A",
+    preview: "また今度ゆっくり話そうね！",
     time: "昨日",
     unread: 0,
     color: "#27ae60",
@@ -119,12 +119,12 @@ const DUMMY_CHATS = [
     mute: true,
     messages: [
       { date: "昨日" },
-      { type: "theirs", text: "寂しいかな？でも家にいるといつまでも甘えて、身の回りのこと全然できない気がして", time: "20:00" }
+      { type: "theirs", text: "また今度ゆっくり話そうね！", time: "20:00" }
     ]
   },
   {
     id: "8",
-    name: "斉藤健一郎",
+    name: "佐藤 太郎",
     preview: "",
     time: "昨日",
     unread: 0,
