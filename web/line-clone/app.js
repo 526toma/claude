@@ -319,5 +319,38 @@ function escHtml(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+// ── Visual Viewport (iOS keyboard fix) ──
+// iOSでキーボードが開くと visual viewport が縮小するため、
+// チャット画面の top/height を visual viewport に合わせて動的に調整する
+(function () {
+  const vv = window.visualViewport;
+  if (!vv) return;
+
+  const chatScreen = document.getElementById("screen-chat");
+
+  function adjust() {
+    chatScreen.style.top = vv.offsetTop + "px";
+    chatScreen.style.height = vv.height + "px";
+    chatScreen.style.bottom = "auto";
+    // キーボードを開いたまま最新メッセージが見えるようにスクロール
+    const area = document.getElementById("messages-area");
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function reset() {
+    chatScreen.style.top = "";
+    chatScreen.style.height = "";
+    chatScreen.style.bottom = "";
+  }
+
+  vv.addEventListener("resize", () => {
+    if (chatScreen.classList.contains("open")) adjust();
+    else reset();
+  });
+  vv.addEventListener("scroll", () => {
+    if (chatScreen.classList.contains("open")) adjust();
+  });
+})();
+
 // ── Init ──
 renderChatList();
