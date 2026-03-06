@@ -337,10 +337,10 @@ button { background: none; border: none; cursor: pointer; padding: 0; }
 /* ── PWA（ホーム画面追加）モード：下に余裕を持たせる ── */
 @media (display-mode: standalone) {
   .input-bar {
-    padding-bottom: calc(16px + var(--safe-bottom));
+    padding-bottom: calc(28px + var(--safe-bottom));
   }
   .bottom-nav {
-    padding-bottom: calc(20px + var(--safe-bottom));
-    height: calc(var(--nav-h) + 20px + var(--safe-bottom));
+    padding-bottom: calc(28px + var(--safe-bottom));
+    height: calc(var(--nav-h) + 28px + var(--safe-bottom));
   }
 }
