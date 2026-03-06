@@ -209,6 +209,78 @@ window.toggleLike = async (tweetId, isLiked) => {
   }
 };
 
+// ── Comments ──
+let commentTweetId = null;
+let commentUnsub = null;
+
+window.openComments = (tweetId) => {
+  commentTweetId = tweetId;
+  if (currentUser) {
+    const av = document.getElementById("comment-avatar");
+    av.textContent = (currentUserData?.displayName || "?")[0].toUpperCase();
+    av.style.background = getAvatarColor(currentUser.uid);
+  }
+  document.getElementById("comment-modal").classList.remove("hidden");
+  document.getElementById("comment-input").value = "";
+  const listEl = document.getElementById("comment-list");
+  listEl.innerHTML = '<div class="empty-state">読み込み中...</div>';
+  if (commentUnsub) commentUnsub();
+  const q = query(collection(db, "tweets", tweetId, "comments"), orderBy("createdAt", "asc"), limit(100));
+  commentUnsub = onSnapshot(q, (snap) => {
+    if (snap.empty) {
+      listEl.innerHTML = '<div class="empty-state">まだコメントがありません</div>';
+      return;
+    }
+    listEl.innerHTML = "";
+    snap.forEach(d => {
+      const c = d.data();
+      const item = document.createElement("div");
+      item.className = "comment-item";
+      item.innerHTML = `
+        <div class="tweet-avatar" style="background:${getAvatarColor(c.uid)};width:32px;height:32px;font-size:13px;flex-shrink:0">${(c.displayName||"?")[0].toUpperCase()}</div>
+        <div class="comment-body">
+          <div class="comment-header">
+            <span class="tweet-name">${escHtml(c.displayName)}</span>
+            <span class="tweet-user">@${escHtml(c.username)}</span>
+          </div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+        </div>
+      `;
+      listEl.appendChild(item);
+    });
+    listEl.scrollTop = listEl.scrollHeight;
+  });
+};
+
+window.closeComments = () => {
+  document.getElementById("comment-modal").classList.add("hidden");
+  if (commentUnsub) { commentUnsub(); commentUnsub = null; }
+  commentTweetId = null;
+};
+
+window.postComment = async () => {
+  const input = document.getElementById("comment-input");
+  const text = input.value.trim();
+  if (!text || !currentUser || !commentTweetId) return;
+  const btn = document.getElementById("comment-submit");
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, "tweets", commentTweetId, "comments"), {
+      uid: currentUser.uid,
+      displayName: currentUserData?.displayName || currentUser.displayName || "匿名",
+      username: currentUserData?.username || "user",
+      text,
+      createdAt: serverTimestamp()
+    });
+    await updateDoc(doc(db, "tweets", commentTweetId), { commentCount: increment(1) });
+    input.value = "";
+  } catch (e) {
+    showToast("エラーが発生しました");
+  } finally {
+    btn.disabled = false;
+  }
+};
+
 // ── Retweet ──
 window.toggleRetweet = async (tweetId, isRetweeted) => {
   if (!currentUser) return;
@@ -267,6 +339,10 @@ function buildTweetCard(id, data) {
       </div>
       <div class="tweet-text">${escHtml(data.text)}</div>
       <div class="tweet-actions">
+        <button class="action-btn" onclick="event.stopPropagation();openComments('${id}')">
+          <svg viewBox="0 0 24 24"><path d="M14.046 2.242l-4.148-.01h-.002c-4.374 0-7.8 3.427-7.8 7.802 0 4.098 3.186 7.206 7.465 7.37v3.828c0 .108.044.286.12.403.142.225.384.347.632.347.138 0 .277-.038.402-.118.264-.168 6.473-4.14 8.088-5.506 1.902-1.61 3.04-3.97 3.043-6.312v-.017c-.006-4.367-3.43-7.787-7.8-7.788zm3.787 12.972c-1.134.96-4.862 3.405-6.772 4.643V16.67c0-.414-.335-.75-.75-.75h-.396c-3.66 0-6.318-2.476-6.318-5.886 0-3.534 2.768-6.302 6.3-6.302l4.147.01h.002c3.532 0 6.3 2.766 6.302 6.296-.003 1.91-.942 3.844-2.514 5.176z"/></svg>
+          ${data.commentCount || 0}
+        </button>
         <button class="action-btn${isLiked ? " liked" : ""}" onclick="event.stopPropagation();toggleLike('${id}', ${isLiked})">
           <svg viewBox="0 0 24 24"><path d="${isLiked
             ? "M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.813-1.148 2.353-2.73 4.644-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12z"
