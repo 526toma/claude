@@ -190,8 +190,10 @@ window.openChat = (id) => {
   document.getElementById("chat-header-name").textContent = chat.name;
   renderMessages(chat);
 
-  // リスト画面を隠してから開く（キーボード時に背後が透けないよう）
-  document.getElementById("screen-list").style.visibility = "hidden";
+  // リスト画面を左にずらしながらチャットを開く（LINEライクなアニメーション）
+  const listScreen = document.getElementById("screen-list");
+  listScreen.classList.add("push-left");
+  listScreen.style.visibility = "hidden";
   document.getElementById("screen-chat").classList.add("open");
   // Scroll to bottom
   setTimeout(() => {
@@ -201,8 +203,10 @@ window.openChat = (id) => {
 };
 
 window.closeChat = () => {
-  // アニメーション中にリスト画面が見えるよう、閉じる前に戻す
-  document.getElementById("screen-list").style.visibility = "";
+  // 閉じる前にリスト画面を元の位置に戻す（アニメーションと同期）
+  const listScreen = document.getElementById("screen-list");
+  listScreen.style.visibility = "";
+  listScreen.classList.remove("push-left");
   document.getElementById("screen-chat").classList.remove("open");
   currentChatId = null;
 };
