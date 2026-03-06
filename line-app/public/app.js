@@ -86,9 +86,7 @@ function showApp() {
   loginModal.style.display = 'none';
   mainApp.style.display    = 'flex';
 
-  document.getElementById('myName').textContent   = myName;
-  document.getElementById('myAvatar').textContent = initials(myName);
-  document.getElementById('myAvatar').style.background = myColor || '#06C755';
+  document.getElementById('myName').textContent = myName;
 
   setDoc(doc(db, 'users', myId), {
     name: myName, color: myColor, lastSeen: serverTimestamp(), online: true,
