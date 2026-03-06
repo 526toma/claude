@@ -193,8 +193,12 @@ window.openChat = (id) => {
   // リスト画面を左にずらしながらチャットを開く（LINEライクなアニメーション）
   const listScreen = document.getElementById("screen-list");
   listScreen.classList.add("push-left");
-  listScreen.style.visibility = ""; // スライド中は見えるようにする
+  listScreen.style.visibility = "";
   document.getElementById("screen-chat").classList.add("open");
+  // スライドアニメーション完了後にリストを隠す（transition = 0.3s）
+  setTimeout(() => {
+    if (currentChatId) listScreen.style.visibility = "hidden";
+  }, 300);
   // Scroll to bottom
   setTimeout(() => {
     const area = document.getElementById("messages-area");
