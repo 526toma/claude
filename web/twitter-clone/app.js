@@ -43,6 +43,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ── Avatar Colors ──
+const AVATAR_COLORS = ['#1d9bf0','#7856ff','#ff7a00','#00ba7c','#f91880','#ffad1f','#ff6b6b','#00c9ff'];
+function getAvatarColor(uid) {
+  if (!uid) return AVATAR_COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < uid.length; i++) hash = (hash * 31 + uid.charCodeAt(i)) & 0xffffffff;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 // ── State ──
 let currentUser = null;
 let currentUserData = null;
@@ -113,8 +122,17 @@ window.registerUser = async () => {
 };
 
 window.logoutUser = async () => {
+  closeProfileMenu();
   if (feedUnsubscribe) feedUnsubscribe();
   await signOut(auth);
+};
+
+window.toggleProfileMenu = () => {
+  document.getElementById("profile-menu").classList.toggle("hidden");
+};
+
+window.closeProfileMenu = () => {
+  document.getElementById("profile-menu").classList.add("hidden");
 };
 
 window.showLogin = () => {
@@ -236,10 +254,11 @@ function buildTweetCard(id, data) {
   const initial = (data.displayName || "?")[0].toUpperCase();
   const time = data.createdAt ? formatTime(data.createdAt.toDate()) : "";
 
+  const color = getAvatarColor(data.uid);
   const card = document.createElement("div");
   card.className = "tweet-card";
   card.innerHTML = `
-    <div class="tweet-avatar" onclick="viewUserProfile('${data.uid}')">${initial}</div>
+    <div class="tweet-avatar" style="background:${color}" onclick="viewUserProfile('${data.uid}')">${initial}</div>
     <div class="tweet-right">
       <div class="tweet-header">
         <span class="tweet-name" onclick="viewUserProfile('${data.uid}')">${escHtml(data.displayName)}</span>
@@ -274,7 +293,9 @@ window.viewUserProfile = async (uid) => {
   const userData = await fetchUserData(uid);
   if (!userData) return;
 
-  document.getElementById("user-avatar-large").textContent = (userData.displayName || "?")[0].toUpperCase();
+  const uAvatar = document.getElementById("user-avatar-large");
+  uAvatar.textContent = (userData.displayName || "?")[0].toUpperCase();
+  uAvatar.style.background = getAvatarColor(uid);
   document.getElementById("user-display-name").textContent = userData.displayName || "-";
   document.getElementById("user-username-display").textContent = "@" + (userData.username || "-");
   document.getElementById("user-tweet-count").textContent = userData.tweetCount || 0;
@@ -325,7 +346,7 @@ window.searchUsers = async () => {
       const card = document.createElement("div");
       card.className = "user-card";
       card.innerHTML = `
-        <div class="tweet-avatar">${(u.displayName||"?")[0].toUpperCase()}</div>
+        <div class="tweet-avatar" style="background:${getAvatarColor(u.uid)}">${(u.displayName||"?")[0].toUpperCase()}</div>
         <div class="user-card-info">
           <div class="user-card-name">${escHtml(u.displayName)}</div>
           <div class="user-card-handle">@${escHtml(u.username)}</div>
@@ -347,8 +368,19 @@ async function updateProfileUI() {
   if (!data) return;
   currentUserData = data;
   const initial = (data.displayName || "?")[0].toUpperCase();
-  document.getElementById("compose-avatar").textContent = initial;
-  document.getElementById("profile-avatar-large").textContent = initial;
+  const color = getAvatarColor(currentUser.uid);
+  const setAvatar = (id) => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = initial; el.style.background = color; }
+  };
+  setAvatar("compose-avatar");
+  setAvatar("profile-avatar-large");
+  setAvatar("header-avatar");
+  setAvatar("menu-avatar");
+  const menuName = document.getElementById("menu-name");
+  const menuUser = document.getElementById("menu-username");
+  if (menuName) menuName.textContent = data.displayName || "-";
+  if (menuUser) menuUser.textContent = "@" + (data.username || "-");
   document.getElementById("profile-display-name").textContent = data.displayName || "-";
   document.getElementById("profile-username-display").textContent = "@" + (data.username || "-");
   document.getElementById("profile-tweet-count").textContent = data.tweetCount || 0;
