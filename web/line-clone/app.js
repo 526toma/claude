@@ -190,6 +190,8 @@ window.openChat = (id) => {
   document.getElementById("chat-header-name").textContent = chat.name;
   renderMessages(chat);
 
+  // リスト画面を隠してから開く（キーボード時に背後が透けないよう）
+  document.getElementById("screen-list").style.visibility = "hidden";
   document.getElementById("screen-chat").classList.add("open");
   // Scroll to bottom
   setTimeout(() => {
@@ -199,6 +201,8 @@ window.openChat = (id) => {
 };
 
 window.closeChat = () => {
+  // アニメーション中にリスト画面が見えるよう、閉じる前に戻す
+  document.getElementById("screen-list").style.visibility = "";
   document.getElementById("screen-chat").classList.remove("open");
   currentChatId = null;
 };
@@ -329,17 +333,17 @@ function escHtml(s) {
   const chatScreen = document.getElementById("screen-chat");
 
   function adjust() {
-    // キーボードの高さ = レイアウトビューポート - ビジュアルビューポート
-    const keyboardHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    // 高さは変えず padding-bottom でコンテンツをキーボード分押し上げる
-    // → 画面は常に inset:0 を維持するので背後の画面が透けない
-    chatScreen.style.paddingBottom = keyboardHeight > 0 ? keyboardHeight + "px" : "";
+    chatScreen.style.top = vv.offsetTop + "px";
+    chatScreen.style.height = vv.height + "px";
+    chatScreen.style.bottom = "auto";
     const area = document.getElementById("messages-area");
     area.scrollTop = area.scrollHeight;
   }
 
   function reset() {
-    chatScreen.style.paddingBottom = "";
+    chatScreen.style.top = "";
+    chatScreen.style.height = "";
+    chatScreen.style.bottom = "";
   }
 
   vv.addEventListener("resize", () => {
