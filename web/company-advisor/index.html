@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>経営アドバイザー | ビジネスコンサルティング</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ナビゲーション -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">BizAdvisor</div>
+      <ul class="nav-links">
+        <li><a href="#services">サービス</a></li>
+        <li><a href="#about">について</a></li>
+        <li><a href="#flow">ご利用の流れ</a></li>
+        <li><a href="#contact" class="nav-cta">無料相談</a></li>
+      </ul>
+      <button class="nav-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+    <ul class="nav-links-mobile hidden" id="mobile-menu">
+      <li><a href="#services" onclick="toggleMenu()">サービス</a></li>
+      <li><a href="#about" onclick="toggleMenu()">について</a></li>
+      <li><a href="#flow" onclick="toggleMenu()">ご利用の流れ</a></li>
+      <li><a href="#contact" onclick="toggleMenu()">無料相談</a></li>
+    </ul>
+  </nav>
+
+  <!-- ヒーローセクション -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-tag">経営コンサルティング</p>
+      <h1 class="hero-title">
+        あなたの会社を<br>次のステージへ
+      </h1>
+      <p class="hero-subtitle">
+        中小企業から大企業まで、経営課題の解決から成長戦略の立案まで、<br>
+        豊富な実績を持つプロフェッショナルがサポートします。
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">無料相談を予約する</a>
+        <a href="#services" class="btn-secondary">サービスを見る</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">500+</span>
+          <span class="stat-label">支援企業数</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">15年</span>
+          <span class="stat-label">コンサルティング実績</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">98%</span>
+          <span class="stat-label">顧客満足度</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-card">
+        <div class="card-icon">💼</div>
+        <div class="card-text">
+          <strong>経営戦略立案</strong>
+          <p>データ分析に基づく最適戦略</p>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="card-icon">📈</div>
+        <div class="card-text">
+          <strong>業績改善支援</strong>
+          <p>収益性向上・コスト削減</p>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="card-icon">🤝</div>
+        <div class="card-text">
+          <strong>組織・人材開発</strong>
+          <p>チームビルディング支援</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- サービスセクション -->
+  <section class="services" id="services">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-tag">Services</p>
+        <h2 class="section-title">提供サービス</h2>
+        <p class="section-desc">企業の課題に合わせた幅広いコンサルティングサービスを提供しています</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🎯</div>
+          <h3>経営戦略コンサルティング</h3>
+          <p>市場分析・競合調査をもとに、中長期の経営戦略を策定。ビジョンの明確化から実行計画まで一貫してサポートします。</p>
+          <ul class="service-list">
+            <li>事業計画策定</li>
+            <li>市場・競合分析</li>
+            <li>新規事業開発支援</li>
+          </ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💰</div>
+          <h3>財務・収益改善</h3>
+          <p>財務状況の診断から収益構造の最適化まで、数字に基づいた具体的な改善策を提案・実行します。</p>
+          <ul class="service-list">
+            <li>財務分析・診断</li>
+            <li>コスト削減施策</li>
+            <li>資金調達支援</li>
+          </ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">👥</div>
+          <h3>組織・人材開発</h3>
+          <p>強い組織づくりのための人材育成・評価制度の整備、チームの生産性向上を支援します。</p>
+          <ul class="service-list">
+            <li>組織設計・再編</li>
+            <li>人事評価制度構築</li>
+            <li>リーダーシップ研修</li>
+          </ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔄</div>
+          <h3>業務プロセス改善</h3>
+          <p>業務フローの可視化・分析を行い、非効率な工程を特定。DX推進も含めた効率化を実現します。</p>
+          <ul class="service-list">
+            <li>業務フロー分析</li>
+            <li>DX・デジタル化推進</li>
+            <li>品質管理改善</li>
+          </ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🌐</div>
+          <h3>マーケティング戦略</h3>
+          <p>ブランド戦略の構築からデジタルマーケティングまで、顧客獲得・売上拡大を支援します。</p>
+          <ul class="service-list">
+            <li>ブランド戦略策定</li>
+            <li>デジタルマーケティング</li>
+            <li>顧客分析・CRM</li>
+          </ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🚀</div>
+          <h3>スタートアップ支援</h3>
+          <p>創業期から成長期まで、スタートアップが直面する課題を経験豊富なアドバイザーが伴走支援します。</p>
+          <ul class="service-list">
+            <li>ビジネスモデル構築</li>
+            <li>資金調達・投資家紹介</li>
+            <li>スケールアップ戦略</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- アドバイザー紹介 -->
+  <section class="about" id="about">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-tag">About</p>
+        <h2 class="section-title">アドバイザー紹介</h2>
+      </div>
+      <div class="advisor-grid">
+        <div class="advisor-card">
+          <div class="advisor-avatar">👨‍💼</div>
+          <h3>山田 健一</h3>
+          <p class="advisor-role">代表コンサルタント</p>
+          <p class="advisor-bio">大手コンサルティングファームにて15年以上の経験を持つ。製造業・小売業・IT業界を中心に200社以上の経営改革を支援。MBA取得。</p>
+          <div class="advisor-tags">
+            <span>経営戦略</span>
+            <span>M&A</span>
+            <span>DX推進</span>
+          </div>
+        </div>
+        <div class="advisor-card">
+          <div class="advisor-avatar">👩‍💼</div>
+          <h3>鈴木 美奈</h3>
+          <p class="advisor-role">財務コンサルタント</p>
+          <p class="advisor-bio">公認会計士・税理士として10年以上のキャリアを持ち、上場企業から中小企業まで財務改善・IPO支援を多数手がけてきた。</p>
+          <div class="advisor-tags">
+            <span>財務改善</span>
+            <span>IPO支援</span>
+            <span>資金調達</span>
+          </div>
+        </div>
+        <div class="advisor-card">
+          <div class="advisor-avatar">👨‍💻</div>
+          <h3>田中 誠</h3>
+          <p class="advisor-role">DX・ITコンサルタント</p>
+          <p class="advisor-bio">シリコンバレーでの起業経験を持つ。テクノロジーを活用したビジネス変革を専門とし、スタートアップから大企業のDX化を支援。</p>
+          <div class="advisor-tags">
+            <span>DX戦略</span>
+            <span>スタートアップ</span>
+            <span>IT活用</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ご利用の流れ -->
+  <section class="flow" id="flow">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-tag">Flow</p>
+        <h2 class="section-title">ご利用の流れ</h2>
+        <p class="section-desc">まずは無料相談から。お気軽にお問い合わせください。</p>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>無料相談申込</h3>
+            <p>フォームまたはお電話にてご連絡ください。60分の無料相談を実施します。</p>
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>現状ヒアリング</h3>
+            <p>貴社の課題・目標・現状を詳しくお聞きし、最適なアドバイザーをアサインします。</p>
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>提案・契約</h3>
+            <p>課題分析をもとにカスタマイズされた支援プランを提案。ご納得いただいた上で契約します。</p>
+          </div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h3>支援開始</h3>
+            <p>定期的なミーティングと実行支援を通じて、確実な成果を目指します。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- お問い合わせ -->
+  <section class="contact" id="contact">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-tag">Contact</p>
+        <h2 class="section-title">無料相談のご予約</h2>
+        <p class="section-desc">まずはお気軽にご相談ください。専門のアドバイザーが対応いたします。</p>
+      </div>
+      <div class="contact-wrapper">
+        <form class="contact-form" onsubmit="submitForm(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>お名前 <span class="required">*</span></label>
+              <input type="text" id="name" placeholder="山田 太郎" required />
+            </div>
+            <div class="form-group">
+              <label>会社名 <span class="required">*</span></label>
+              <input type="text" id="company" placeholder="株式会社〇〇" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>メールアドレス <span class="required">*</span></label>
+              <input type="email" id="email" placeholder="example@company.co.jp" required />
+            </div>
+            <div class="form-group">
+              <label>電話番号</label>
+              <input type="tel" id="phone" placeholder="03-0000-0000" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ご相談内容 <span class="required">*</span></label>
+            <select id="category" required>
+              <option value="">選択してください</option>
+              <option value="strategy">経営戦略</option>
+              <option value="finance">財務・収益改善</option>
+              <option value="hr">組織・人材</option>
+              <option value="process">業務プロセス</option>
+              <option value="marketing">マーケティング</option>
+              <option value="startup">スタートアップ支援</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>詳細・ご要望</label>
+            <textarea id="message" placeholder="現在の課題や相談したい内容をお書きください" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-full">無料相談を予約する</button>
+        </form>
+        <div class="contact-info">
+          <div class="contact-info-card">
+            <h3>お電話でのお問い合わせ</h3>
+            <p class="contact-phone">03-1234-5678</p>
+            <p class="contact-hours">平日 9:00〜18:00</p>
+          </div>
+          <div class="contact-info-card">
+            <h3>初回相談について</h3>
+            <ul>
+              <li>✅ 60分の無料相談</li>
+              <li>✅ オンライン・対面どちらも可</li>
+              <li>✅ 秘密厳守</li>
+              <li>✅ 契約義務なし</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="form-success" class="form-success hidden">
+        <div class="success-icon">✅</div>
+        <h3>送信が完了しました</h3>
+        <p>2営業日以内にご連絡いたします。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">BizAdvisor</div>
+      <p class="footer-catch">あなたのビジネスの成功を全力でサポートします</p>
+      <div class="footer-links">
+        <a href="#services">サービス</a>
+        <a href="#about">アドバイザー</a>
+        <a href="#flow">ご利用の流れ</a>
+        <a href="#contact">お問い合わせ</a>
+      </div>
+      <p class="footer-copy">© 2026 BizAdvisor. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
