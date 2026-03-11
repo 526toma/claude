@@ -533,3 +533,283 @@ textarea.add-input { resize: vertical; }
   font-size: 14px;
   font-weight: 600;
 }
+
+/* ========== Google Auth Bar ========== */
+.google-auth-bar {
+  background: linear-gradient(135deg, #FF6B9D, #FF8FAB);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: box-shadow 0.2s;
+}
+.google-login-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+.google-auth-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.google-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+.google-email {
+  font-size: 12px;
+  color: white;
+  font-weight: 500;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.google-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.google-logout-btn:hover { background: rgba(255,255,255,0.35); }
+
+/* ========== Email Bubbles ========== */
+.email-bubble {
+  max-width: 88%;
+}
+
+.email-bubble-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.email-icon { color: var(--pink); }
+.email-label { font-size: 11px; font-weight: 700; color: var(--pink); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.email-from {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-subject {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.email-expand-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #aaa;
+  cursor: pointer;
+  padding: 2px 0;
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+.email-expand-btn:hover { color: var(--pink); }
+
+.email-body-preview {
+  font-size: 12px;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 6px 0;
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.email-question {
+  font-size: 13px;
+  color: #555;
+  margin: 8px 0 6px;
+  font-weight: 500;
+}
+
+.email-action-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-email-reply {
+  background: var(--pink);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-email-reply:hover { background: var(--pink-dark); }
+
+.btn-email-dismiss {
+  background: #f0f0f0;
+  color: #777;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-email-dismiss:hover { background: #e0e0e0; }
+
+.email-drafting {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 4px 0;
+}
+
+.email-sent-badge {
+  font-size: 13px;
+  color: #06C755;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.email-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Draft (user side) */
+.draft-bubble {
+  max-width: 88%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.draft-label {
+  font-size: 11px;
+  opacity: 0.8;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.draft-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 8px;
+  color: white;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  line-height: 1.5;
+}
+.draft-textarea::placeholder { color: rgba(255,255,255,0.5); }
+
+.draft-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.draft-cancel-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.draft-send-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  color: var(--user-bubble);
+  border: none;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.draft-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Calendar link */
+.cal-link {
+  color: #aaa;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.cal-link:hover { color: var(--pink); }
+
+/* Spinning refresh button */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning svg { animation: spin 1s linear infinite; }
+
+/* 5-tab nav smaller font */
+.bottom-nav .nav-item { font-size: 10px; }
+
+/* ========== Onboarding ========== */
+.onboarding-container {
+  background: linear-gradient(180deg, #FFF0F5 0%, #f0f0f0 100%);
+}
+
+.onboarding-complete-msg {
+  text-align: center;
+  width: 100%;
+  font-size: 13px;
+  color: #aaa;
+  padding: 8px 0;
+  animation: fadeIn 0.5s ease;
+}
+
