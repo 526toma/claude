@@ -1484,6 +1484,10 @@ $('btnHumanIdea').addEventListener('click', ()=>{
 });
 $('btnDiveHuman').addEventListener('click', diveHumanIdea);
 
+// Expose to inline onclick handlers
+window.goHome = goHome;
+window.goBackFromDive = goBackFromDive;
+
 // Init
 updateAIStatus();
 renderHistory();
