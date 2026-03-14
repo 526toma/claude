@@ -8,12 +8,42 @@
   // --- State ---
   let state = {
     step: 0,
+    maxStep: 0,
     ideas: [],
     ranked: [],
     winner: null,
     winnerCode: '',
     marketingKit: null,
     monetizePlan: null,
+    running: false,
+  };
+
+  // ステップとセクションの対応
+  const stepSections = {
+    1: 'ideas',
+    2: 'evaluation',
+    3: 'build',
+    4: 'preview',
+    5: 'marketing',
+    6: 'monetize',
+  };
+
+  const stepTitles = {
+    1: 'Step 1: アイデアを5つ生成中...',
+    2: 'Step 2: 評価・ランキング中...',
+    3: 'Step 3: コードを自動生成中...',
+    4: 'Step 4: アプリをプレビュー中...',
+    5: 'Step 5: 宣伝素材を作成中...',
+    6: 'Step 6: マネタイズ設計中...',
+  };
+
+  const stepDoneTitles = {
+    1: 'Step 1: アイデア生成 完了',
+    2: 'Step 2: 評価・選定 完了',
+    3: 'Step 3: 自動開発 完了',
+    4: 'Step 4: プレビュー 完了',
+    5: 'Step 5: 宣伝キット 完了',
+    6: 'Step 6: マネタイズ 完了',
   };
 
   // --- DOM References ---
@@ -29,6 +59,7 @@
   };
 
   const pipelineSteps = document.querySelectorAll('.pipeline__step');
+  const pipelineCurrentEl = document.getElementById('pipeline-current');
 
   // --- Helpers ---
 
@@ -39,16 +70,56 @@
   function showSection(name) {
     Object.values(sections).forEach(s => s.classList.remove('active'));
     if (sections[name]) sections[name].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updatePipelineTitle(text) {
+    if (pipelineCurrentEl) pipelineCurrentEl.textContent = text;
   }
 
   function updatePipeline(activeStep) {
+    state.step = activeStep;
+    if (activeStep > state.maxStep) state.maxStep = activeStep;
     pipelineSteps.forEach(step => {
       const n = parseInt(step.dataset.step);
-      step.classList.remove('active', 'completed');
+      step.classList.remove('active', 'completed', 'viewing');
       if (n < activeStep) step.classList.add('completed');
       if (n === activeStep) step.classList.add('active');
     });
+    updatePipelineTitle(stepTitles[activeStep] || '');
   }
+
+  function markStepDone(stepNum) {
+    pipelineSteps.forEach(step => {
+      const n = parseInt(step.dataset.step);
+      if (n === stepNum) {
+        step.classList.remove('active');
+        step.classList.add('completed');
+      }
+    });
+  }
+
+  function navigateToStep(stepNum) {
+    if (state.running) return;
+    const sectionName = stepSections[stepNum];
+    if (!sectionName) return;
+    showSection(sectionName);
+    pipelineSteps.forEach(step => {
+      step.classList.remove('viewing');
+      const n = parseInt(step.dataset.step);
+      if (n === stepNum) step.classList.add('viewing');
+    });
+    updatePipelineTitle(stepDoneTitles[stepNum]);
+  }
+
+  // クリックイベント: 完了済みステップに戻る
+  pipelineSteps.forEach(step => {
+    step.addEventListener('click', () => {
+      if (step.classList.contains('completed')) {
+        navigateToStep(parseInt(step.dataset.step));
+      }
+    });
+  });
 
   function escapeHtml(str) {
     const div = document.createElement('div');
@@ -67,6 +138,8 @@
     if (selectedCategories.length === 0) {
       alert('少なくとも1つのカテゴリを選択してください。');
       return;
+    }
+    state.running = true;
     }
 
     document.getElementById('btn-start').disabled = true;
@@ -376,10 +449,12 @@
 
   // --- Complete ---
   async function stepComplete() {
+    state.running = false;
     showSection('download');
+    updatePipelineTitle('全ステップ完了！各ステップをタップで確認できます');
     // 全ステップ完了
     pipelineSteps.forEach(step => {
-      step.classList.remove('active');
+      step.classList.remove('active', 'viewing');
       step.classList.add('completed');
     });
   }
@@ -491,15 +566,18 @@
   function restart() {
     state = {
       step: 0,
+      maxStep: 0,
       ideas: [],
       ranked: [],
       winner: null,
       winnerCode: '',
       marketingKit: null,
       monetizePlan: null,
+      running: false,
     };
-    pipelineSteps.forEach(s => s.classList.remove('active', 'completed'));
+    pipelineSteps.forEach(s => s.classList.remove('active', 'completed', 'viewing'));
     document.getElementById('btn-start').disabled = false;
+    updatePipelineTitle('カテゴリを選んでスタート');
     showSection('start');
   }
 

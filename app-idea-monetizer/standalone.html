@@ -145,46 +145,49 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 17, 23, 0.92);
+  background: rgba(15, 17, 23, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
-  padding: var(--space-md) var(--space-lg);
-  overflow-x: auto;
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.pipeline__current {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  padding: var(--space-xs) 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pipeline__steps {
   display: flex;
   list-style: none;
   justify-content: center;
-  gap: var(--space-xs);
-  min-width: max-content;
+  gap: 2px;
   margin: 0 auto;
 }
 
 .pipeline__step {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   transition: var(--transition-base);
   white-space: nowrap;
   position: relative;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pipeline__step::after {
-  content: '>';
-  position: absolute;
-  right: -8px;
-  color: var(--text-muted);
-  opacity: 0.3;
-  font-size: 0.7rem;
-}
-
-.pipeline__step:last-child::after {
+  content: '';
   display: none;
 }
 
@@ -192,8 +195,8 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--bg-card);
   border: 1.5px solid var(--border-light);
@@ -211,10 +214,21 @@ body::before {
   border-color: var(--accent);
   color: white;
   box-shadow: 0 0 16px var(--accent-glow);
+  animation: activePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes activePulse {
+  0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
+  50% { box-shadow: 0 0 20px var(--accent-glow); }
 }
 
 .pipeline__step.completed {
   color: var(--success);
+  cursor: pointer;
+}
+
+.pipeline__step.completed:active {
+  transform: scale(0.92);
 }
 
 .pipeline__step.completed .pipeline__number {
@@ -229,9 +243,17 @@ body::before {
   font-size: 0.8rem;
 }
 
-/* Hide number text when completed (show checkmark instead) */
 .pipeline__step.completed .pipeline__number {
   font-size: 0;
+}
+
+.pipeline__step.viewing {
+  background: rgba(108, 92, 231, 0.15);
+}
+
+.pipeline__step.viewing .pipeline__number {
+  border-color: var(--accent-light);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 /* ===== Main ===== */
@@ -1011,14 +1033,10 @@ body::before {
   }
 
   .pipeline__steps {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .pipeline__label {
-    display: none;
-  }
-
-  .pipeline__step::after {
     display: none;
   }
 
@@ -1089,28 +1107,29 @@ body::before {
 
   <!-- ===== パイプラインステッパー ===== -->
   <nav class="pipeline" aria-label="パイプライン進捗">
+    <div class="pipeline__current" id="pipeline-current">カテゴリを選んでスタート</div>
     <ol class="pipeline__steps">
-      <li class="pipeline__step" data-step="1">
+      <li class="pipeline__step" data-step="1" data-section="ideas" data-title="アイデア生成">
         <span class="pipeline__number">1</span>
         <span class="pipeline__label">アイデア生成</span>
       </li>
-      <li class="pipeline__step" data-step="2">
+      <li class="pipeline__step" data-step="2" data-section="evaluation" data-title="評価・選定">
         <span class="pipeline__number">2</span>
         <span class="pipeline__label">評価・選定</span>
       </li>
-      <li class="pipeline__step" data-step="3">
+      <li class="pipeline__step" data-step="3" data-section="build" data-title="自動開発">
         <span class="pipeline__number">3</span>
         <span class="pipeline__label">自動開発</span>
       </li>
-      <li class="pipeline__step" data-step="4">
+      <li class="pipeline__step" data-step="4" data-section="preview" data-title="プレビュー">
         <span class="pipeline__number">4</span>
         <span class="pipeline__label">プレビュー</span>
       </li>
-      <li class="pipeline__step" data-step="5">
+      <li class="pipeline__step" data-step="5" data-section="marketing" data-title="宣伝キット">
         <span class="pipeline__number">5</span>
         <span class="pipeline__label">宣伝キット</span>
       </li>
-      <li class="pipeline__step" data-step="6">
+      <li class="pipeline__step" data-step="6" data-section="monetize" data-title="マネタイズ">
         <span class="pipeline__number">6</span>
         <span class="pipeline__label">マネタイズ</span>
       </li>
@@ -2867,12 +2886,42 @@ const Monetization = (() => {
   // --- State ---
   let state = {
     step: 0,
+    maxStep: 0,
     ideas: [],
     ranked: [],
     winner: null,
     winnerCode: '',
     marketingKit: null,
     monetizePlan: null,
+    running: false,
+  };
+
+  // ステップとセクションの対応
+  const stepSections = {
+    1: 'ideas',
+    2: 'evaluation',
+    3: 'build',
+    4: 'preview',
+    5: 'marketing',
+    6: 'monetize',
+  };
+
+  const stepTitles = {
+    1: 'Step 1: アイデアを5つ生成中...',
+    2: 'Step 2: 評価・ランキング中...',
+    3: 'Step 3: コードを自動生成中...',
+    4: 'Step 4: アプリをプレビュー中...',
+    5: 'Step 5: 宣伝素材を作成中...',
+    6: 'Step 6: マネタイズ設計中...',
+  };
+
+  const stepDoneTitles = {
+    1: 'Step 1: アイデア生成 完了',
+    2: 'Step 2: 評価・選定 完了',
+    3: 'Step 3: 自動開発 完了',
+    4: 'Step 4: プレビュー 完了',
+    5: 'Step 5: 宣伝キット 完了',
+    6: 'Step 6: マネタイズ 完了',
   };
 
   // --- DOM References ---
@@ -2888,6 +2937,7 @@ const Monetization = (() => {
   };
 
   const pipelineSteps = document.querySelectorAll('.pipeline__step');
+  const pipelineCurrentEl = document.getElementById('pipeline-current');
 
   // --- Helpers ---
 
@@ -2898,16 +2948,56 @@ const Monetization = (() => {
   function showSection(name) {
     Object.values(sections).forEach(s => s.classList.remove('active'));
     if (sections[name]) sections[name].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updatePipelineTitle(text) {
+    if (pipelineCurrentEl) pipelineCurrentEl.textContent = text;
   }
 
   function updatePipeline(activeStep) {
+    state.step = activeStep;
+    if (activeStep > state.maxStep) state.maxStep = activeStep;
     pipelineSteps.forEach(step => {
       const n = parseInt(step.dataset.step);
-      step.classList.remove('active', 'completed');
+      step.classList.remove('active', 'completed', 'viewing');
       if (n < activeStep) step.classList.add('completed');
       if (n === activeStep) step.classList.add('active');
     });
+    updatePipelineTitle(stepTitles[activeStep] || '');
   }
+
+  function markStepDone(stepNum) {
+    pipelineSteps.forEach(step => {
+      const n = parseInt(step.dataset.step);
+      if (n === stepNum) {
+        step.classList.remove('active');
+        step.classList.add('completed');
+      }
+    });
+  }
+
+  function navigateToStep(stepNum) {
+    if (state.running) return;
+    const sectionName = stepSections[stepNum];
+    if (!sectionName) return;
+    showSection(sectionName);
+    pipelineSteps.forEach(step => {
+      step.classList.remove('viewing');
+      const n = parseInt(step.dataset.step);
+      if (n === stepNum) step.classList.add('viewing');
+    });
+    updatePipelineTitle(stepDoneTitles[stepNum]);
+  }
+
+  // クリックイベント: 完了済みステップに戻る
+  pipelineSteps.forEach(step => {
+    step.addEventListener('click', () => {
+      if (step.classList.contains('completed')) {
+        navigateToStep(parseInt(step.dataset.step));
+      }
+    });
+  });
 
   function escapeHtml(str) {
     const div = document.createElement('div');
@@ -2926,6 +3016,8 @@ const Monetization = (() => {
     if (selectedCategories.length === 0) {
       alert('少なくとも1つのカテゴリを選択してください。');
       return;
+    }
+    state.running = true;
     }
 
     document.getElementById('btn-start').disabled = true;
@@ -3235,10 +3327,12 @@ const Monetization = (() => {
 
   // --- Complete ---
   async function stepComplete() {
+    state.running = false;
     showSection('download');
+    updatePipelineTitle('全ステップ完了！各ステップをタップで確認できます');
     // 全ステップ完了
     pipelineSteps.forEach(step => {
-      step.classList.remove('active');
+      step.classList.remove('active', 'viewing');
       step.classList.add('completed');
     });
   }
@@ -3350,15 +3444,18 @@ const Monetization = (() => {
   function restart() {
     state = {
       step: 0,
+      maxStep: 0,
       ideas: [],
       ranked: [],
       winner: null,
       winnerCode: '',
       marketingKit: null,
       monetizePlan: null,
+      running: false,
     };
-    pipelineSteps.forEach(s => s.classList.remove('active', 'completed'));
+    pipelineSteps.forEach(s => s.classList.remove('active', 'completed', 'viewing'));
     document.getElementById('btn-start').disabled = false;
+    updatePipelineTitle('カテゴリを選んでスタート');
     showSection('start');
   }
 
