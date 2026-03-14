@@ -140,7 +140,6 @@
       return;
     }
     state.running = true;
-    }
 
     document.getElementById('btn-start').disabled = true;
 
