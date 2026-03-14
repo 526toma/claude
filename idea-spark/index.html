@@ -448,6 +448,54 @@ body::before{
   .combo-formula{font-size:0.75rem}
 }
 
+/* ===== User Suggestions in Deep Dive ===== */
+.user-suggestions{
+  background:var(--card);border:1px solid var(--border2);border-radius:var(--r-lg);
+  padding:20px;margin-bottom:16px;animation:fadeUp 0.4s ease both;
+}
+.user-suggestions .dive-card-title{margin-bottom:12px}
+.suggestion-input-row{
+  display:flex;gap:8px;margin-bottom:12px;
+}
+.suggestion-input-row input{
+  flex:1;padding:10px 14px;background:var(--bg3);
+  border:1px solid var(--border2);border-radius:var(--r-md);
+  color:var(--text);font-size:0.88rem;font-family:var(--font);outline:none;
+}
+.suggestion-input-row input:focus{border-color:var(--cyan)}
+.suggestion-input-row input::placeholder{color:var(--text3)}
+.suggestion-add-btn{
+  padding:10px 18px;background:linear-gradient(135deg,var(--cyan),#0ea5e9);
+  border:none;border-radius:var(--r-md);color:white;font-weight:700;
+  font-size:0.88rem;cursor:pointer;font-family:var(--font);
+  white-space:nowrap;transition:all 0.2s;
+}
+.suggestion-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--cyan3)}
+.suggestion-add-btn:active{transform:scale(0.97)}
+.suggestion-list{list-style:none;margin-bottom:8px}
+.suggestion-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;margin-bottom:6px;
+  background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);
+  border-radius:var(--r-md);font-size:0.84rem;color:var(--text);
+  animation:fadeUp 0.3s ease both;
+}
+.suggestion-item .s-icon{color:var(--cyan);flex-shrink:0;font-size:1rem}
+.suggestion-item .s-text{flex:1}
+.suggestion-item .s-remove{
+  background:none;border:none;color:var(--text3);font-size:1.1rem;
+  cursor:pointer;padding:2px 6px;border-radius:4px;transition:all 0.15s;
+}
+.suggestion-item .s-remove:hover{color:var(--red);background:rgba(248,113,113,0.1)}
+.suggestion-regen{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);
+  border-radius:var(--r-full);color:var(--green);font-size:0.8rem;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all 0.2s;margin-top:4px;
+}
+.suggestion-regen:hover{background:rgba(52,211,153,0.2);transform:translateY(-1px)}
+.suggestion-empty{font-size:0.78rem;color:var(--text3);padding:4px 0}
+
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -1144,6 +1192,16 @@ function renderDeepDive(idea, dive){
       <div id="diveVariations"></div>
     </div>
 
+    <div class="user-suggestions" id="userSuggestions">
+      <div class="dive-card-title"><span class="ic">&#128172;</span>あなたのアイデアを追加</div>
+      <div class="suggestion-input-row">
+        <input type="text" id="suggestionInput" placeholder="こうしたらもっと良くなるかも...">
+        <button class="suggestion-add-btn" id="btnAddSuggestion">追加</button>
+      </div>
+      <ul class="suggestion-list" id="suggestionList"></ul>
+      <div class="suggestion-empty" id="suggestionEmpty">あなたの視点でアイデアをもっと良くしましょう</div>
+    </div>
+
     <div class="dive-actions">
       <button class="btn btn-secondary" onclick="goBackFromDive()">&#8592; 戻る</button>
       <button class="btn btn-primary" onclick="goHome()"><span>&#128260;</span> 最初から</button>
@@ -1161,6 +1219,105 @@ function renderDeepDive(idea, dive){
     });
     varContainer.appendChild(vDiv);
   });
+
+  // User suggestions
+  const suggestions = [];
+  const sugInput = sec.querySelector('#suggestionInput');
+  const sugList = sec.querySelector('#suggestionList');
+  const sugEmpty = sec.querySelector('#suggestionEmpty');
+  const btnAdd = sec.querySelector('#btnAddSuggestion');
+
+  function addSuggestion(){
+    const text = sugInput.value.trim();
+    if(!text) return;
+    suggestions.push(text);
+    sugInput.value = '';
+    renderSuggestions();
+    sugInput.focus();
+  }
+
+  function removeSuggestion(i){
+    suggestions.splice(i, 1);
+    renderSuggestions();
+  }
+
+  function renderSuggestions(){
+    sugList.innerHTML = '';
+    sugEmpty.style.display = suggestions.length ? 'none' : 'block';
+    // Remove old regen button
+    const oldRegen = sec.querySelector('.suggestion-regen');
+    if(oldRegen) oldRegen.remove();
+
+    suggestions.forEach((s, i) => {
+      const li = document.createElement('li');
+      li.className = 'suggestion-item';
+      li.innerHTML = '<span class="s-icon">&#128161;</span><span class="s-text">'+esc(s)+'</span>';
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 's-remove';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.addEventListener('click', () => removeSuggestion(i));
+      li.appendChild(removeBtn);
+      sugList.appendChild(li);
+    });
+
+    // Show re-analyze button if AI is on and there are suggestions
+    if(suggestions.length > 0 && AI.on){
+      const regen = document.createElement('button');
+      regen.className = 'suggestion-regen';
+      regen.innerHTML = '&#9889; AIで提案を反映して再分析';
+      regen.addEventListener('click', () => reAnalyzeWithSuggestions(idea, suggestions));
+      sec.querySelector('#userSuggestions').appendChild(regen);
+    }
+
+    // Also update the idea object with user suggestions for later use
+    idea.userSuggestions = [...suggestions];
+  }
+
+  btnAdd.addEventListener('click', addSuggestion);
+  sugInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addSuggestion();
+  });
+
+  // Restore previous suggestions if any
+  if(idea.userSuggestions && idea.userSuggestions.length){
+    idea.userSuggestions.forEach(s => suggestions.push(s));
+    renderSuggestions();
+  }
+}
+
+async function reAnalyzeWithSuggestions(idea, suggestions){
+  const sec = $('secDeepDive');
+  sec.innerHTML = '<div class="loading"><div class="loader"></div><div class="loading-text">ユーザーの提案を反映して再分析中...</div></div>';
+
+  const sys = `あなたはアプリ企画の専門家です。ユーザーの改善提案を取り入れて、アプリアイデアを再分析してください。
+必ず以下のJSON形式だけを返してください:
+{"mvp":["MVP機能1","MVP機能2",...],"competitors":[{"name":"競合名","strength":"強み","weakness":"弱み"}],"revenue":[{"model":"収益モデル名","desc":"説明"}],"risks":[{"risk":"リスク","level":"高/中/低","mitigation":"対策"}],"variations":[{"name":"バリエーション名","desc":"説明"}],"scores":{"novelty":8,"feasibility":7,"market":6,"monetization":7}}
+scoresは1-10で評価。ユーザーの提案を踏まえて内容を改善してください。`;
+
+  const usr = `【アプリ名】${idea.name}
+【説明】${idea.desc}
+【トレンド】${idea.trend||''}
+【参考ヒット】${idea.hit||''}
+【特徴】${(idea.features||[]).join(', ')}
+【ターゲット】${idea.audience||''}
+
+【ユーザーからの改善提案】
+${suggestions.map((s,i)=>(i+1)+'. '+s).join('\n')}
+
+上記のユーザー提案を積極的に取り入れて、深掘り分析を改善してください。MVP機能6つ、競合2つ、収益モデル2つ、リスク3つ、バリエーション3つを提案してください。`;
+
+  try {
+    const raw = await AI.call(sys, usr, {temp:0.8, max:2000});
+    const m = raw.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('JSON parse failed');
+    const dive = JSON.parse(m[0]);
+    renderDeepDive(idea, dive);
+  } catch(e) {
+    console.error('Re-analysis failed:', e);
+    // Fallback: just re-render with offline + keep suggestions
+    const dive = generateOfflineDive(idea);
+    renderDeepDive(idea, dive);
+  }
 }
 
 function goBackFromDive(){
