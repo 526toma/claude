@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Idea Monetizer - アイデアを自動でプロダクトに</title>
-  <meta name="description" content="アイデア生成から開発・宣伝・マネタイズまでワンクリックで自動化するダッシュボード">
+  <title>Idea Monetizer</title>
   <style>
 /* ============================================================
    Idea Monetizer - Dashboard UI
@@ -1093,9 +1092,9 @@ body::before {
 }
 
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
 </head>
 <body>
+
   <!-- ===== ヘッダー ===== -->
   <header class="header">
     <div class="header__logo">
@@ -1271,7 +1270,15 @@ body::before {
     <p>&copy; 2026 Idea Monetizer. Built with creativity.</p>
   </footer>
 
-<script>
+  
+  
+  
+  
+  
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
 /**
  * Idea Generator Engine
  * カテゴリ別テンプレートを組み合わせてユニークなアプリアイデアを生成
@@ -1452,7 +1459,6 @@ const IdeaGenerator = (() => {
   return { generateIdeas, generateIdea };
 })();
 
-
 /**
  * Idea Evaluator
  * 各アイデアを複数の軸でスコアリングし、ランキングする
@@ -1550,7 +1556,6 @@ const Evaluator = (() => {
 
   return { evaluateIdea, evaluateAndRank };
 })();
-
 
 /**
  * Auto Builder
@@ -2570,7 +2575,6 @@ render();
   return { buildApp };
 })();
 
-
 /**
  * Marketing Kit Generator
  * アイデアに基づいて宣伝素材を自動生成
@@ -2718,7 +2722,6 @@ const Marketing = (() => {
 
   return { generateKit };
 })();
-
 
 /**
  * Monetization Plan Generator
@@ -2874,7 +2877,6 @@ const Monetization = (() => {
 
   return { generatePlan };
 })();
-
 
 /**
  * App Orchestrator
@@ -3490,6 +3492,6 @@ const Monetization = (() => {
 
 })();
 
-</script>
+  </script>
 </body>
 </html>
