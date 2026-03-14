@@ -15,8 +15,58 @@
       <span class="header__icon">&#9889;</span>
       <h1 class="header__title">Idea Monetizer</h1>
     </div>
-    <p class="header__tagline">ボタン1つでアイデアをプロダクトに変える</p>
+    <p class="header__tagline">トレンド分析 &times; AI &times; 蓄積で最強のアイデアを生む</p>
+    <button id="btn-settings" class="header__settings-btn" title="AI設定">&#9881;</button>
   </header>
+
+  <!-- ===== AI設定モーダル ===== -->
+  <div id="ai-settings-modal" class="modal" hidden>
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title">&#9881; AI設定</h2>
+        <button class="modal__close" id="btn-close-settings">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="setting-group">
+          <label class="setting-label">AI機能</label>
+          <label class="toggle">
+            <input type="checkbox" id="ai-enabled">
+            <span class="toggle__slider"></span>
+            <span class="toggle__text" id="ai-status-text">OFF（テンプレートモード）</span>
+          </label>
+          <p class="setting-hint">ONにするとOpenRouter API経由でAIがアイデア生成・コード開発・マーケティングを行います</p>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="ai-api-key">OpenRouter APIキー</label>
+          <input type="password" id="ai-api-key" class="setting-input" placeholder="sk-or-v1-...">
+          <p class="setting-hint">
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--accent-light)">openrouter.ai/keys</a>
+            で無料取得できます
+          </p>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="ai-model">AIモデル</label>
+          <select id="ai-model" class="setting-input">
+            <option value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku（高速・安い）</option>
+            <option value="anthropic/claude-sonnet-4">Claude Sonnet 4（バランス）</option>
+            <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash（無料枠あり）</option>
+            <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B（無料）</option>
+          </select>
+        </div>
+        <button id="btn-test-ai" class="btn btn--secondary" style="width:100%">接続テスト</button>
+        <div id="ai-test-result" class="setting-hint" style="margin-top:8px"></div>
+
+        <hr style="border-color:var(--border-color);margin:20px 0">
+
+        <div class="setting-group">
+          <label class="setting-label">アイデアバンク</label>
+          <div id="idea-bank-stats" class="bank-stats"></div>
+          <button id="btn-reset-bank" class="btn btn--secondary" style="width:100%;margin-top:8px;font-size:0.8rem">アイデア履歴をリセット</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== パイプラインステッパー ===== -->
   <nav class="pipeline" aria-label="パイプライン進捗">
@@ -57,9 +107,22 @@
       <div class="start-card">
         <h2 class="start-card__title">自動パイプラインを開始</h2>
         <p class="start-card__desc">
-          アイデアの生成、評価、コード生成、宣伝文作成、マネタイズ設計を<br>
-          すべて自動で実行します。
+          トレンド分析 → 過去のアイデアを進化 → AI生成 → 評価 → 開発 → 宣伝 → マネタイズ<br>
+          すべて自動で実行。回すたびにアイデアが積み上がり進化します。
         </p>
+
+        <!-- AI モード表示 -->
+        <div id="ai-mode-badge" class="ai-mode-badge ai-mode-badge--off">
+          <span id="ai-mode-icon">&#9888;</span>
+          <span id="ai-mode-label">テンプレートモード</span>
+        </div>
+
+        <!-- アイデアバンク概要 -->
+        <div id="bank-summary" class="bank-summary" hidden>
+          <div class="bank-summary__header">&#128200; アイデアバンク</div>
+          <div id="bank-summary-content" class="bank-summary__content"></div>
+        </div>
+
         <div class="start-card__options">
           <label class="category-chip">
             <input type="checkbox" name="category" value="game" checked> ゲーム
@@ -90,9 +153,18 @@
       </div>
     </section>
 
+    <!-- Step 0.5: トレンド分析 -->
+    <section id="section-trends" class="section section--trends">
+      <h2 class="section__title">&#128293; トレンド分析</h2>
+      <div id="trends-content" class="trends-content">
+        <!-- JS で動的に生成 -->
+      </div>
+    </section>
+
     <!-- Step 1: アイデア生成 -->
     <section id="section-ideas" class="section section--ideas">
       <h2 class="section__title">生成されたアイデア</h2>
+      <div id="ideas-source-info" class="ideas-source-info"></div>
       <div id="ideas-grid" class="ideas-grid">
         <!-- JS で動的に生成 -->
       </div>
@@ -171,7 +243,7 @@
           </button>
           <button id="btn-restart" class="btn btn--secondary btn--large">
             <span class="btn__icon">&#8635;</span>
-            もう一度生成
+            もう一度生成（進化）
           </button>
         </div>
       </div>
@@ -181,9 +253,12 @@
 
   <!-- ===== フッター ===== -->
   <footer class="footer">
-    <p>&copy; 2026 Idea Monetizer. Built with creativity.</p>
+    <p>&copy; 2026 Idea Monetizer. Built with creativity &amp; AI.</p>
   </footer>
 
+  <script src="js/trends.js"></script>
+  <script src="js/idea-bank.js"></script>
+  <script src="js/ai-engine.js"></script>
   <script src="js/idea-generator.js"></script>
   <script src="js/evaluator.js"></script>
   <script src="js/builder.js"></script>

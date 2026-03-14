@@ -19,33 +19,37 @@
 }
 
 :root {
-  /* Colors */
-  --bg-primary: #0f1117;
-  --bg-secondary: #1a1d27;
-  --bg-card: #22263a;
-  --bg-card-hover: #2a2f47;
-  --bg-code: #181b2a;
+  /* Colors - refined dark palette */
+  --bg-primary: #080a10;
+  --bg-secondary: #11141e;
+  --bg-card: rgba(22, 27, 45, 0.8);
+  --bg-card-hover: rgba(32, 37, 60, 0.9);
+  --bg-card-solid: #161b2d;
+  --bg-code: #0c0f1a;
 
-  --text-primary: #e8eaf0;
-  --text-secondary: #9ea3b5;
-  --text-muted: #6b7085;
+  --text-primary: #edf0f7;
+  --text-secondary: #8f95ad;
+  --text-muted: #5a607a;
 
-  --accent: #6c5ce7;
-  --accent-light: #a29bfe;
-  --accent-glow: rgba(108, 92, 231, 0.35);
+  --accent: #7c6cf0;
+  --accent-light: #b4a9ff;
+  --accent-glow: rgba(124, 108, 240, 0.4);
+  --accent-gradient: linear-gradient(135deg, #7c6cf0, #00d2d3);
 
-  --success: #00cec9;
-  --success-glow: rgba(0, 206, 201, 0.3);
-  --warning: #fdcb6e;
-  --danger: #e17055;
-  --info: #74b9ff;
+  --success: #00d2d3;
+  --success-glow: rgba(0, 210, 211, 0.3);
+  --warning: #feca57;
+  --danger: #ff6b6b;
+  --info: #54a0ff;
 
   --gold: #ffd700;
   --silver: #c0c0c0;
   --bronze: #cd7f32;
 
-  --border: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
 
   /* Spacing */
   --space-xs: 4px;
@@ -57,20 +61,26 @@
   --space-3xl: 64px;
 
   /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
   --radius-full: 999px;
 
   /* Transitions */
   --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Font */
-  --font-main: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans JP', sans-serif;
-  --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --font-main: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(124, 108, 240, 0.15);
 }
 
 html {
@@ -85,9 +95,11 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Background decoration */
+/* Background - layered ambient glow */
 body::before {
   content: '';
   position: fixed;
@@ -95,8 +107,28 @@ body::before {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 20%, rgba(0, 206, 201, 0.05) 0%, transparent 50%);
+  background:
+    radial-gradient(ellipse at 15% 30%, rgba(124, 108, 240, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(0, 210, 211, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(255, 107, 107, 0.02) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes ambientShift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-2%, 1%) rotate(1deg); }
+}
+
+/* Noise texture overlay for depth */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }
@@ -108,25 +140,31 @@ body::before {
   text-align: center;
   padding: var(--space-xl) var(--space-lg) var(--space-lg);
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(108, 92, 231, 0.08) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(124, 108, 240, 0.06) 0%, transparent 100%);
 }
 
 .header__logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: 10px;
 }
 
 .header__icon {
-  font-size: 2rem;
-  filter: drop-shadow(0 0 12px var(--accent-glow));
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 16px var(--accent-glow));
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 .header__title {
   font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-light), var(--success));
+  font-weight: 800;
+  background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -135,8 +173,9 @@ body::before {
 
 .header__tagline {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-top: var(--space-xs);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  letter-spacing: 0.3px;
 }
 
 /* ===== Pipeline Stepper ===== */
@@ -144,22 +183,24 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 17, 23, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(8, 10, 16, 0.85);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
   border-bottom: 1px solid var(--border);
   padding: var(--space-sm) var(--space-lg);
 }
 
 .pipeline__current {
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--accent-light);
   padding: var(--space-xs) 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+  text-shadow: 0 0 20px var(--accent-glow);
 }
 
 .pipeline__steps {
@@ -276,13 +317,25 @@ body::before {
 
 .section__title {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: var(--space-xl);
   padding-bottom: var(--space-md);
-  border-bottom: 2px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  position: relative;
+}
+
+.section__title::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--accent-gradient);
+  border-radius: 1px;
 }
 
 @keyframes fadeSlideIn {
@@ -296,23 +349,55 @@ body::before {
   }
 }
 
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ===== Start Section ===== */
 .start-card {
   text-align: center;
-  max-width: 600px;
-  margin: var(--space-3xl) auto;
+  max-width: 620px;
+  margin: var(--space-2xl) auto;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl) var(--space-xl);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent-gradient);
 }
 
 .start-card__title {
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: var(--space-md);
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .start-card__desc {
   color: var(--text-secondary);
   margin-bottom: var(--space-xl);
   line-height: 1.8;
+  font-size: 0.88rem;
 }
 
 .start-card__options {
@@ -344,10 +429,11 @@ body::before {
 }
 
 .category-chip:has(input:checked) {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #845ef7);
+  border-color: transparent;
   color: white;
-  box-shadow: 0 0 12px var(--accent-glow);
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transform: scale(1.02);
 }
 
 /* ===== Buttons ===== */
@@ -365,18 +451,36 @@ body::before {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--accent), #845ef7);
+  background: linear-gradient(135deg, var(--accent), #845ef7, var(--accent));
+  background-size: 200% 100%;
   color: white;
   box-shadow: 0 4px 20px var(--accent-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 200%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s;
 }
 
 .btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--accent-glow);
+  box-shadow: 0 8px 36px var(--accent-glow);
+  background-position: 100% 0;
+}
+
+.btn--primary:hover::before {
+  left: 100%;
 }
 
 .btn--primary:active {
   transform: translateY(0);
+  box-shadow: 0 2px 12px var(--accent-glow);
 }
 
 .btn--secondary {
@@ -414,11 +518,22 @@ body::before {
 
 .idea-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  transition: var(--transition-base);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: cardAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.idea-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 }
 
 .idea-card:nth-child(1) { animation-delay: 0.05s; }
@@ -439,9 +554,9 @@ body::before {
 }
 
 .idea-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: rgba(124, 108, 240, 0.3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), 0 0 24px rgba(124, 108, 240, 0.1);
 }
 
 .idea-card__category {
@@ -519,9 +634,18 @@ body::before {
 .eval-card:nth-child(5) { animation-delay: 0.5s; }
 
 .eval-card--winner {
-  border-color: var(--gold);
-  box-shadow: 0 0 24px rgba(255, 215, 0, 0.15);
-  background: linear-gradient(135deg, var(--bg-card), rgba(255, 215, 0, 0.04));
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 32px rgba(255, 215, 0, 0.12), var(--shadow-md);
+  background: linear-gradient(135deg, var(--bg-card), rgba(255, 215, 0, 0.03));
+  position: relative;
+}
+
+.eval-card--winner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--warning), var(--gold));
 }
 
 .eval-card__rank {
@@ -655,10 +779,17 @@ body::before {
 .build-progress__fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent), var(--success));
+  background: linear-gradient(90deg, var(--accent), var(--success), var(--accent));
+  background-size: 200% 100%;
   border-radius: var(--radius-full);
-  transition: width 0.3s ease;
-  box-shadow: 0 0 12px var(--accent-glow);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 16px var(--accent-glow);
+  animation: progressShimmer 2s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .build-progress__status {
@@ -789,10 +920,18 @@ body::before {
 
 .marketing-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   animation: cardAppear 0.4s ease backwards;
+  transition: all 0.3s ease;
+}
+
+.marketing-card:hover {
+  border-color: rgba(124, 108, 240, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .marketing-card:nth-child(1) { animation-delay: 0.05s; }
@@ -876,10 +1015,18 @@ body::before {
 
 .monetize-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   animation: cardAppear 0.4s ease backwards;
+  transition: all 0.3s ease;
+}
+
+.monetize-card:hover {
+  border-color: rgba(0, 210, 211, 0.2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .monetize-card:nth-child(1) { animation-delay: 0.05s; }
@@ -959,7 +1106,10 @@ body::before {
 .monetize-card__revenue-amount {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--success);
+  background: linear-gradient(135deg, var(--success), #55efc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .monetize-card__revenue-label {
@@ -970,17 +1120,29 @@ body::before {
 /* ===== Download Section ===== */
 .download-card {
   text-align: center;
-  max-width: 500px;
+  max-width: 520px;
   margin: var(--space-2xl) auto;
   padding: var(--space-2xl);
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.download-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--success), var(--accent), var(--success));
 }
 
 .download-card__title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   margin-bottom: var(--space-sm);
   background: linear-gradient(135deg, var(--success), var(--accent-light));
   -webkit-background-clip: text;
@@ -1008,6 +1170,27 @@ body::before {
   color: var(--text-muted);
   font-size: 0.8rem;
   border-top: 1px solid var(--border);
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== Selection ===== */
+::selection {
+  background: rgba(124, 108, 240, 0.3);
+  color: white;
 }
 
 /* ===== Loading spinner ===== */
@@ -1091,6 +1274,318 @@ body::before {
   }
 }
 
+/* ============================================================
+   AI Settings & New UI Components
+   ============================================================ */
+
+/* --- Header Settings Button --- */
+.header {
+  position: relative;
+}
+.header__settings-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header__settings-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent-light);
+  transform: rotate(60deg);
+}
+
+/* --- Modal --- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal[hidden] {
+  display: none;
+}
+.modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+.modal__content {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 1;
+}
+.modal__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.modal__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+.modal__close:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+.modal__body {
+  padding: var(--space-md);
+}
+
+/* --- Settings --- */
+.setting-group {
+  margin-bottom: var(--space-md);
+}
+.setting-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.setting-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.setting-input:focus {
+  border-color: var(--accent);
+}
+.setting-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* --- Toggle Switch --- */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.toggle input {
+  display: none;
+}
+.toggle__slider {
+  width: 44px;
+  height: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.toggle__slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.toggle input:checked + .toggle__slider {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.toggle input:checked + .toggle__slider::after {
+  left: 22px;
+  background: white;
+}
+.toggle__text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* --- AI Mode Badge --- */
+.ai-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+.ai-mode-badge--off {
+  background: rgba(255, 165, 0, 0.1);
+  color: #ffa500;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+}
+.ai-mode-badge--on {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  animation: aiGlow 2s ease-in-out infinite;
+}
+@keyframes aiGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(0, 255, 136, 0.2); }
+  50% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.4); }
+}
+
+/* --- Bank Summary --- */
+.bank-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  text-align: left;
+}
+.bank-summary__header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 6px;
+}
+.bank-summary__content {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.bank-stats {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.bank-stats strong {
+  color: var(--accent-light);
+}
+
+/* --- Trends Section --- */
+.trends-content {
+  display: grid;
+  gap: var(--space-sm);
+}
+.trend-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: fadeSlideUp 0.4s ease both;
+}
+.trend-card__hotness {
+  background: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trend-card__info {
+  flex: 1;
+  min-width: 0;
+}
+.trend-card__keyword {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+.trend-card__desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.trend-card__examples {
+  font-size: 0.7rem;
+  color: var(--accent-light);
+  margin-top: 2px;
+}
+
+/* --- Ideas Source Info --- */
+.ideas-source-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+
+/* --- Idea card evolution badge --- */
+.idea-card__badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin-left: 6px;
+}
+.idea-card__badge--evolved {
+  background: rgba(255, 165, 0, 0.15);
+  color: #ffa500;
+}
+.idea-card__badge--ai {
+  background: rgba(0, 255, 136, 0.15);
+  color: #00ff88;
+}
+.idea-card__badge--trend {
+  background: rgba(108, 92, 231, 0.15);
+  color: var(--accent-light);
+}
+
   </style>
 </head>
 <body>
@@ -1101,8 +1596,58 @@ body::before {
       <span class="header__icon">&#9889;</span>
       <h1 class="header__title">Idea Monetizer</h1>
     </div>
-    <p class="header__tagline">ボタン1つでアイデアをプロダクトに変える</p>
+    <p class="header__tagline">トレンド分析 &times; AI &times; 蓄積で最強のアイデアを生む</p>
+    <button id="btn-settings" class="header__settings-btn" title="AI設定">&#9881;</button>
   </header>
+
+  <!-- ===== AI設定モーダル ===== -->
+  <div id="ai-settings-modal" class="modal" hidden>
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title">&#9881; AI設定</h2>
+        <button class="modal__close" id="btn-close-settings">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="setting-group">
+          <label class="setting-label">AI機能</label>
+          <label class="toggle">
+            <input type="checkbox" id="ai-enabled">
+            <span class="toggle__slider"></span>
+            <span class="toggle__text" id="ai-status-text">OFF（テンプレートモード）</span>
+          </label>
+          <p class="setting-hint">ONにするとOpenRouter API経由でAIがアイデア生成・コード開発・マーケティングを行います</p>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="ai-api-key">OpenRouter APIキー</label>
+          <input type="password" id="ai-api-key" class="setting-input" placeholder="sk-or-v1-...">
+          <p class="setting-hint">
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color:var(--accent-light)">openrouter.ai/keys</a>
+            で無料取得できます
+          </p>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label" for="ai-model">AIモデル</label>
+          <select id="ai-model" class="setting-input">
+            <option value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku（高速・安い）</option>
+            <option value="anthropic/claude-sonnet-4">Claude Sonnet 4（バランス）</option>
+            <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash（無料枠あり）</option>
+            <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B（無料）</option>
+          </select>
+        </div>
+        <button id="btn-test-ai" class="btn btn--secondary" style="width:100%">接続テスト</button>
+        <div id="ai-test-result" class="setting-hint" style="margin-top:8px"></div>
+
+        <hr style="border-color:var(--border-color);margin:20px 0">
+
+        <div class="setting-group">
+          <label class="setting-label">アイデアバンク</label>
+          <div id="idea-bank-stats" class="bank-stats"></div>
+          <button id="btn-reset-bank" class="btn btn--secondary" style="width:100%;margin-top:8px;font-size:0.8rem">アイデア履歴をリセット</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== パイプラインステッパー ===== -->
   <nav class="pipeline" aria-label="パイプライン進捗">
@@ -1143,9 +1688,22 @@ body::before {
       <div class="start-card">
         <h2 class="start-card__title">自動パイプラインを開始</h2>
         <p class="start-card__desc">
-          アイデアの生成、評価、コード生成、宣伝文作成、マネタイズ設計を<br>
-          すべて自動で実行します。
+          トレンド分析 → 過去のアイデアを進化 → AI生成 → 評価 → 開発 → 宣伝 → マネタイズ<br>
+          すべて自動で実行。回すたびにアイデアが積み上がり進化します。
         </p>
+
+        <!-- AI モード表示 -->
+        <div id="ai-mode-badge" class="ai-mode-badge ai-mode-badge--off">
+          <span id="ai-mode-icon">&#9888;</span>
+          <span id="ai-mode-label">テンプレートモード</span>
+        </div>
+
+        <!-- アイデアバンク概要 -->
+        <div id="bank-summary" class="bank-summary" hidden>
+          <div class="bank-summary__header">&#128200; アイデアバンク</div>
+          <div id="bank-summary-content" class="bank-summary__content"></div>
+        </div>
+
         <div class="start-card__options">
           <label class="category-chip">
             <input type="checkbox" name="category" value="game" checked> ゲーム
@@ -1176,9 +1734,18 @@ body::before {
       </div>
     </section>
 
+    <!-- Step 0.5: トレンド分析 -->
+    <section id="section-trends" class="section section--trends">
+      <h2 class="section__title">&#128293; トレンド分析</h2>
+      <div id="trends-content" class="trends-content">
+        <!-- JS で動的に生成 -->
+      </div>
+    </section>
+
     <!-- Step 1: アイデア生成 -->
     <section id="section-ideas" class="section section--ideas">
       <h2 class="section__title">生成されたアイデア</h2>
+      <div id="ideas-source-info" class="ideas-source-info"></div>
       <div id="ideas-grid" class="ideas-grid">
         <!-- JS で動的に生成 -->
       </div>
@@ -1257,7 +1824,7 @@ body::before {
           </button>
           <button id="btn-restart" class="btn btn--secondary btn--large">
             <span class="btn__icon">&#8635;</span>
-            もう一度生成
+            もう一度生成（進化）
           </button>
         </div>
       </div>
@@ -1267,9 +1834,12 @@ body::before {
 
   <!-- ===== フッター ===== -->
   <footer class="footer">
-    <p>&copy; 2026 Idea Monetizer. Built with creativity.</p>
+    <p>&copy; 2026 Idea Monetizer. Built with creativity &amp; AI.</p>
   </footer>
 
+  
+  
+  
   
   
   
@@ -1279,6 +1849,791 @@ body::before {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
+/**
+ * Trends Database
+ * 現在のアプリ市場トレンドと過去のヒット事例
+ */
+const Trends = (() => {
+
+  // 2024-2026年のアプリ市場トレンド
+  const currentTrends = [
+    {
+      keyword: 'AI搭載',
+      description: 'AI機能を組み込んだアプリが急増。チャットbot、画像生成、文章要約など',
+      hotness: 10,
+      categories: ['tool', 'business', 'education'],
+      examples: ['ChatGPT', 'Midjourney', 'Notion AI'],
+    },
+    {
+      keyword: 'ショート動画',
+      description: '短尺動画コンテンツの消費が急増。TikTok型のUIが標準化',
+      hotness: 9,
+      categories: ['sns', 'entertainment'],
+      examples: ['TikTok', 'YouTube Shorts', 'Instagram Reels'],
+    },
+    {
+      keyword: 'ゲーミフィケーション',
+      description: '非ゲームアプリにゲーム要素を導入。ストリーク、バッジ、ランキング',
+      hotness: 8,
+      categories: ['education', 'lifestyle', 'tool'],
+      examples: ['Duolingo', 'Habitica', 'Forest'],
+    },
+    {
+      keyword: 'ノーコード/ローコード',
+      description: 'プログラミング不要でアプリや自動化を作れるツール',
+      hotness: 9,
+      categories: ['tool', 'business'],
+      examples: ['Notion', 'Airtable', 'Zapier'],
+    },
+    {
+      keyword: 'メンタルヘルス',
+      description: '瞑想、ストレス管理、睡眠改善アプリの需要増',
+      hotness: 8,
+      categories: ['lifestyle', 'education'],
+      examples: ['Calm', 'Headspace', 'Meditopia'],
+    },
+    {
+      keyword: 'サブスク管理',
+      description: 'サブスクリプション管理や節約系アプリが人気',
+      hotness: 7,
+      categories: ['tool', 'lifestyle', 'business'],
+      examples: ['Subscriptions', 'Bobby', 'Truebill'],
+    },
+    {
+      keyword: 'ハイパーカジュアルゲーム',
+      description: 'シンプルで中毒性の高いカジュアルゲーム。広告収入モデル',
+      hotness: 8,
+      categories: ['game', 'entertainment'],
+      examples: ['Flappy Bird', '2048', 'Wordle'],
+    },
+    {
+      keyword: 'コミュニティ型',
+      description: '同じ趣味・目的を持つ人のコミュニティプラットフォーム',
+      hotness: 7,
+      categories: ['sns', 'lifestyle', 'education'],
+      examples: ['Discord', 'Reddit', 'Clubhouse'],
+    },
+    {
+      keyword: 'パーソナライズ',
+      description: 'ユーザーの行動に基づくパーソナライズされた体験',
+      hotness: 9,
+      categories: ['entertainment', 'education', 'lifestyle'],
+      examples: ['Spotify', 'Netflix', 'Pinterest'],
+    },
+    {
+      keyword: 'フィンテック',
+      description: '家計管理、投資、決済の簡素化アプリ',
+      hotness: 8,
+      categories: ['business', 'lifestyle', 'tool'],
+      examples: ['PayPay', 'Moneytree', 'Revolut'],
+    },
+    {
+      keyword: 'Web3/ブロックチェーン',
+      description: 'NFT、トークン経済、分散型アプリ',
+      hotness: 5,
+      categories: ['business', 'entertainment', 'game'],
+      examples: ['OpenSea', 'Axie Infinity', 'StepN'],
+    },
+    {
+      keyword: 'AR/VR',
+      description: '拡張現実・仮想現実を活用した没入型体験',
+      hotness: 7,
+      categories: ['game', 'education', 'entertainment'],
+      examples: ['Pokemon GO', 'IKEA Place', 'Beat Saber'],
+    },
+    {
+      keyword: 'クリエイターエコノミー',
+      description: '個人クリエイターが収益化できるプラットフォーム',
+      hotness: 9,
+      categories: ['sns', 'business', 'entertainment'],
+      examples: ['YouTube', 'Patreon', 'Substack'],
+    },
+    {
+      keyword: 'マイクロSaaS',
+      description: '特定のニッチな問題を解決する小さなSaaSアプリ',
+      hotness: 8,
+      categories: ['tool', 'business'],
+      examples: ['Plausible', 'Buttondown', 'Carrd'],
+    },
+    {
+      keyword: 'ヘルスケア',
+      description: '運動記録、食事管理、バイタルトラッキング',
+      hotness: 8,
+      categories: ['lifestyle', 'tool'],
+      examples: ['Nike Run Club', 'MyFitnessPal', 'Oura'],
+    },
+  ];
+
+  // 過去の大ヒットアプリのパターン
+  const hitPatterns = [
+    { pattern: 'シンプル操作 + 中毒性', examples: ['Flappy Bird', '2048', 'Wordle'], factor: '操作は1つだけ、でもやめられない' },
+    { pattern: '日常の小さな不便を解消', examples: ['Shazam', 'Google翻訳', 'CamScanner'], factor: '「あったらいいな」を実現' },
+    { pattern: 'ソーシャル × ゲーム', examples: ['Among Us', 'Pokemon GO', 'クイズノック'], factor: '友達と一緒に遊べる' },
+    { pattern: 'データの可視化', examples: ['Spotify Wrapped', 'スクリーンタイム', 'GitHub Contributions'], factor: '自分のデータを美しく見せる' },
+    { pattern: 'ストリーク・習慣化', examples: ['Duolingo', 'Snapchat', 'GitHub'], factor: '連続記録が途切れたくない心理' },
+    { pattern: 'ユーザー生成コンテンツ', examples: ['TikTok', 'Minecraft', 'Roblox'], factor: 'ユーザーが作ったものが価値になる' },
+    { pattern: '制限が生む創造性', examples: ['Twitter (140字)', 'Vine (6秒)', 'BeReal (1日1回)'], factor: '制約があるから面白い' },
+    { pattern: 'リアルタイム体験', examples: ['Clubhouse', 'Twitch', 'Among Us'], factor: '今この瞬間を共有' },
+    { pattern: '自動化・時短', examples: ['IFTTT', 'Zapier', 'Shortcuts'], factor: '面倒なことを自動でやる' },
+    { pattern: 'パーソナル分析', examples: ['23andMe', 'MBTI診断', '動物占い'], factor: '自分を知りたい欲求' },
+  ];
+
+  // トレンドの組み合わせ提案
+  const trendCombinations = [
+    { trends: ['AI搭載', 'ゲーミフィケーション'], suggestion: 'AIが問題を自動生成し、ゲーム感覚で学べるアプリ' },
+    { trends: ['ショート動画', 'クリエイターエコノミー'], suggestion: '短い動画で稼げるマイクロコンテンツプラットフォーム' },
+    { trends: ['パーソナライズ', 'メンタルヘルス'], suggestion: '個人の状態に合わせたAIカウンセリングアプリ' },
+    { trends: ['ハイパーカジュアルゲーム', 'AI搭載'], suggestion: 'AIが毎回違うステージを生成する無限パズルゲーム' },
+    { trends: ['ノーコード/ローコード', 'マイクロSaaS'], suggestion: '5分で自分だけのWebツールを作れるビルダー' },
+    { trends: ['コミュニティ型', 'ゲーミフィケーション'], suggestion: '学習コミュニティで競い合えるソーシャル学習アプリ' },
+    { trends: ['フィンテック', 'ゲーミフィケーション'], suggestion: '貯金をゲーム化して楽しく資産を増やすアプリ' },
+    { trends: ['ヘルスケア', 'AI搭載'], suggestion: 'AIが食事写真から栄養素を分析するヘルスアプリ' },
+    { trends: ['サブスク管理', '自動化・時短'], suggestion: '不要なサブスクを自動で検出し解約を提案するアプリ' },
+    { trends: ['クリエイターエコノミー', 'AI搭載'], suggestion: 'AIがコンテンツを分析して最適な投稿タイミングを提案' },
+  ];
+
+  /**
+   * 指定カテゴリに関連するトレンドを取得
+   */
+  function getTrendsForCategories(categories) {
+    return currentTrends
+      .filter(t => t.categories.some(c => categories.includes(c)))
+      .sort((a, b) => b.hotness - a.hotness);
+  }
+
+  /**
+   * ランダムにトレンドの組み合わせを提案
+   */
+  function suggestCombinations(count = 3) {
+    const shuffled = [...trendCombinations].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  }
+
+  /**
+   * ヒットパターンを取得
+   */
+  function getHitPatterns() {
+    return hitPatterns;
+  }
+
+  /**
+   * トレンドベースのアイデア強化ヒントを生成
+   */
+  function getEnhancementHints(idea) {
+    const relevantTrends = currentTrends
+      .filter(t => t.categories.includes(idea.category))
+      .sort((a, b) => b.hotness - a.hotness)
+      .slice(0, 3);
+
+    const relevantPatterns = hitPatterns
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 2);
+
+    return {
+      trends: relevantTrends,
+      patterns: relevantPatterns,
+      suggestions: relevantTrends.map(t =>
+        `「${t.keyword}」の要素を取り入れて、${t.examples[0]}のような体験を加える`
+      ),
+    };
+  }
+
+  return {
+    currentTrends,
+    hitPatterns,
+    getTrendsForCategories,
+    suggestCombinations,
+    getHitPatterns,
+    getEnhancementHints,
+  };
+})();
+
+/**
+ * Idea Bank - アイデア蓄積・進化システム
+ * 過去のアイデアをlocalStorageに保存し、組み合わせて進化させる
+ */
+const IdeaBank = (() => {
+
+  const STORAGE_KEY = 'idea_monetizer_bank';
+  const MAX_HISTORY = 100; // 最大保存数
+
+  /**
+   * 保存されたアイデアバンクを読み込む
+   */
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { ideas: [], generations: 0, winners: [] };
+      return JSON.parse(raw);
+    } catch {
+      return { ideas: [], generations: 0, winners: [] };
+    }
+  }
+
+  /**
+   * アイデアバンクを保存
+   */
+  function save(bank) {
+    try {
+      // 古いアイデアを削除して最大数を維持
+      if (bank.ideas.length > MAX_HISTORY) {
+        bank.ideas = bank.ideas.slice(-MAX_HISTORY);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bank));
+    } catch {
+      // localStorageが使えない場合は無視
+    }
+  }
+
+  /**
+   * 新しいアイデアをバンクに追加
+   */
+  function addIdeas(ideas) {
+    const bank = load();
+    bank.generations++;
+    const timestamp = Date.now();
+    ideas.forEach(idea => {
+      bank.ideas.push({
+        ...idea,
+        generation: bank.generations,
+        timestamp,
+        wasWinner: false,
+        evolvedFrom: idea.evolvedFrom || null,
+        trendBasis: idea.trendBasis || null,
+      });
+    });
+    save(bank);
+    return bank;
+  }
+
+  /**
+   * 勝者をマーク
+   */
+  function markWinner(ideaId) {
+    const bank = load();
+    const idea = bank.ideas.find(i => i.id === ideaId);
+    if (idea) {
+      idea.wasWinner = true;
+      bank.winners.push({
+        id: ideaId,
+        name: idea.name,
+        category: idea.category,
+        type: idea.type,
+        features: idea.features,
+        timestamp: Date.now(),
+      });
+    }
+    save(bank);
+  }
+
+  /**
+   * 過去のアイデアから特徴を抽出
+   */
+  function extractInsights() {
+    const bank = load();
+    if (bank.ideas.length === 0) return null;
+
+    // よく出現する特徴を集計
+    const featureCount = {};
+    const categoryCount = {};
+    const typeCount = {};
+    const winnerFeatures = {};
+
+    bank.ideas.forEach(idea => {
+      categoryCount[idea.category] = (categoryCount[idea.category] || 0) + 1;
+      typeCount[idea.type] = (typeCount[idea.type] || 0) + 1;
+      (idea.features || []).forEach(f => {
+        featureCount[f] = (featureCount[f] || 0) + 1;
+      });
+    });
+
+    // 勝者の特徴を特別にカウント
+    bank.winners.forEach(w => {
+      (w.features || []).forEach(f => {
+        winnerFeatures[f] = (winnerFeatures[f] || 0) + 1;
+      });
+    });
+
+    // 人気特徴をソート
+    const popularFeatures = Object.entries(featureCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([feature, count]) => ({ feature, count }));
+
+    // 勝利した特徴（成功パターン）
+    const winningFeatures = Object.entries(winnerFeatures)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([feature, count]) => ({ feature, count }));
+
+    return {
+      totalIdeas: bank.ideas.length,
+      totalGenerations: bank.generations,
+      totalWinners: bank.winners.length,
+      popularFeatures,
+      winningFeatures,
+      categoryDistribution: categoryCount,
+      typeDistribution: typeCount,
+      recentWinners: bank.winners.slice(-5),
+    };
+  }
+
+  /**
+   * 過去のアイデアを進化させる（組み合わせ・突然変異）
+   */
+  function evolveIdeas(categories, trends, count = 2) {
+    const bank = load();
+    if (bank.ideas.length < 3) return []; // 蓄積が少なければスキップ
+
+    const evolved = [];
+    const relevantIdeas = bank.ideas.filter(i => categories.includes(i.category));
+    if (relevantIdeas.length < 2) return [];
+
+    for (let i = 0; i < count && i < 10; i++) {
+      const evolved_idea = createEvolution(relevantIdeas, trends, bank.winners);
+      if (evolved_idea) evolved.push(evolved_idea);
+    }
+
+    return evolved;
+  }
+
+  /**
+   * 2つのアイデアを交差させて新しいアイデアを生む
+   */
+  function createEvolution(ideas, trends, winners) {
+    // 親を2つ選ぶ（勝者優先）
+    const winnerIds = new Set(winners.map(w => w.id));
+    const parents = selectParents(ideas, winnerIds);
+    if (!parents) return null;
+
+    const [parent1, parent2] = parents;
+
+    // トレンドを1つ選ぶ
+    const trend = trends.length > 0
+      ? trends[Math.floor(Math.random() * trends.length)]
+      : null;
+
+    // 特徴を交差
+    const allFeatures = [...new Set([...(parent1.features || []), ...(parent2.features || [])])];
+    const mixedFeatures = allFeatures
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3 + Math.floor(Math.random() * 3));
+
+    // トレンドベースの特徴を追加
+    if (trend) {
+      const trendFeature = trendToFeature(trend);
+      if (trendFeature && !mixedFeatures.includes(trendFeature)) {
+        mixedFeatures.push(trendFeature);
+      }
+    }
+
+    // 名前を生成
+    const evolutionPrefixes = ['ネオ', 'ウルトラ', 'ハイパー', 'メガ', 'スーパー', 'エクストリーム', 'アルティメット', 'プロ'];
+    const prefix = evolutionPrefixes[Math.floor(Math.random() * evolutionPrefixes.length)];
+
+    // typeはランダムに親のどちらかを継承
+    const baseParent = Math.random() > 0.5 ? parent1 : parent2;
+    const otherParent = baseParent === parent1 ? parent2 : parent1;
+
+    return {
+      id: 'evo_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+      name: prefix + baseParent.name.replace(/^(スーパー|メガ|ポケット|エンドレス|クレイジー|ネオ|ファンタジー|ピクセル|スマート|クイック|イージー|ウルトラ|ハイパー|エクストリーム|アルティメット|プロ)/, ''),
+      category: baseParent.category,
+      type: baseParent.type,
+      description: `${baseParent.description}（${otherParent.name}の要素を融合）`,
+      features: mixedFeatures,
+      targetAudience: baseParent.targetAudience || otherParent.targetAudience,
+      evolvedFrom: [parent1.id, parent2.id],
+      trendBasis: trend ? trend.keyword : null,
+      isEvolved: true,
+    };
+  }
+
+  /**
+   * 親アイデアを選択（勝者を優先）
+   */
+  function selectParents(ideas, winnerIds) {
+    if (ideas.length < 2) return null;
+
+    // 勝者があればそちらを優先
+    const winnerPool = ideas.filter(i => winnerIds.has(i.id));
+    const normalPool = ideas.filter(i => !winnerIds.has(i.id));
+
+    let parent1, parent2;
+
+    if (winnerPool.length > 0) {
+      parent1 = winnerPool[Math.floor(Math.random() * winnerPool.length)];
+      const otherPool = ideas.filter(i => i.id !== parent1.id);
+      parent2 = otherPool[Math.floor(Math.random() * otherPool.length)];
+    } else {
+      const shuffled = [...ideas].sort(() => Math.random() - 0.5);
+      parent1 = shuffled[0];
+      parent2 = shuffled[1];
+    }
+
+    return [parent1, parent2];
+  }
+
+  /**
+   * トレンドキーワードを具体的な特徴に変換
+   */
+  function trendToFeature(trend) {
+    const trendFeatureMap = {
+      'AI搭載': 'AI自動生成',
+      'ショート動画': 'ショート動画対応',
+      'ゲーミフィケーション': 'ゲーム要素付き',
+      'ノーコード/ローコード': 'ノーコード対応',
+      'メンタルヘルス': 'ウェルネス機能',
+      'サブスク管理': 'サブスク連携',
+      'ハイパーカジュアルゲーム': 'ワンタップ操作',
+      'コミュニティ型': 'コミュニティ機能',
+      'パーソナライズ': 'パーソナライズ機能',
+      'フィンテック': 'お金の見える化',
+      'Web3/ブロックチェーン': 'トークン経済',
+      'AR/VR': 'AR機能',
+      'クリエイターエコノミー': '収益化ツール',
+      'マイクロSaaS': 'ニッチ特化機能',
+      'ヘルスケア': 'ヘルスデータ連携',
+    };
+    return trendFeatureMap[trend.keyword] || null;
+  }
+
+  /**
+   * バンクの統計情報を取得
+   */
+  function getStats() {
+    const bank = load();
+    return {
+      totalIdeas: bank.ideas.length,
+      generations: bank.generations,
+      winners: bank.winners.length,
+      hasHistory: bank.ideas.length > 0,
+    };
+  }
+
+  /**
+   * バンクをリセット
+   */
+  function reset() {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  return {
+    load,
+    addIdeas,
+    markWinner,
+    extractInsights,
+    evolveIdeas,
+    getStats,
+    reset,
+  };
+})();
+
+/**
+ * AI Engine - AIを活用したアイデア生成・分析
+ * OpenRouter API（CORS対応）を使用してブラウザから直接AI呼び出し
+ */
+const AIEngine = (() => {
+
+  const SETTINGS_KEY = 'idea_monetizer_ai_settings';
+  const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+  // デフォルト設定
+  const defaults = {
+    apiKey: '',
+    model: 'anthropic/claude-3.5-haiku',
+    enabled: false,
+  };
+
+  /**
+   * 設定の読み込み
+   */
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      return raw ? { ...defaults, ...JSON.parse(raw) } : { ...defaults };
+    } catch {
+      return { ...defaults };
+    }
+  }
+
+  /**
+   * 設定の保存
+   */
+  function saveSettings(settings) {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * AI が使えるかチェック
+   */
+  function isAvailable() {
+    const settings = loadSettings();
+    return settings.enabled && settings.apiKey.length > 0;
+  }
+
+  /**
+   * OpenRouter API を呼び出す
+   */
+  async function callAI(systemPrompt, userPrompt, options = {}) {
+    const settings = loadSettings();
+    if (!settings.apiKey) {
+      throw new Error('APIキーが設定されていません');
+    }
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${settings.apiKey}`,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'Idea Monetizer',
+      },
+      body: JSON.stringify({
+        model: settings.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_tokens: options.maxTokens || 2000,
+        temperature: options.temperature || 0.8,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`API Error (${response.status}): ${err}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  }
+
+  /**
+   * トレンド分析に基づくアイデア生成
+   */
+  async function generateTrendBasedIdeas(categories, trends, insights, count = 5) {
+    const categoryLabels = {
+      game: 'ゲーム', tool: 'ツール', sns: 'SNS',
+      lifestyle: 'ライフスタイル', education: '教育',
+      entertainment: 'エンタメ', business: 'ビジネス',
+    };
+
+    const catNames = categories.map(c => categoryLabels[c] || c).join('、');
+    const trendInfo = trends.slice(0, 5).map(t =>
+      `- ${t.keyword}（人気度: ${t.hotness}/10）: ${t.description}。例: ${t.examples.join(', ')}`
+    ).join('\n');
+
+    let insightInfo = '';
+    if (insights) {
+      insightInfo = `\n\n【過去の実績データ】
+- これまで${insights.totalIdeas}個のアイデアを生成、${insights.totalWinners}回の勝者選出
+- 勝利した特徴: ${insights.winningFeatures.map(f => f.feature).join(', ') || 'まだなし'}
+- 人気の特徴: ${insights.popularFeatures.map(f => f.feature).join(', ') || 'まだなし'}
+- 最近の勝者: ${insights.recentWinners.map(w => w.name).join(', ') || 'まだなし'}`;
+    }
+
+    const systemPrompt = `あなたはアプリアイデアの専門家です。現在のトレンドと過去の実績データを分析して、実際に開発・収益化できる具体的なWebアプリのアイデアを生成します。
+
+以下のルールに従ってください：
+1. 各アイデアはHTML/CSS/JSだけで作れるWebアプリであること
+2. トレンドを取り入れつつ、独自性のあるアイデアにすること
+3. 過去の勝者パターンがあれば、その成功要因を活かすこと
+4. 必ずJSON配列で回答すること（説明文は不要）
+
+typeは以下のいずれかを使ってください：
+clicker, puzzle, quiz, memory, rhythm, tower, word, slider, qr, image_resize, color, text_convert, password, pomodoro, notepad, json, diary, photo_wall, question, mood, bookshelf, skill_share, habit, expense, meal_log, water, declutter, recipe, flashcard, typing, kanji, coding, math, vocab, fortune, meme, nickname, compatibility, soundboard, roulette, kanban, invoice, card_reader, minutes, time_track, kpi`;
+
+    const userPrompt = `【対象カテゴリ】${catNames}
+
+【現在のトレンド】
+${trendInfo}
+${insightInfo}
+
+上記を踏まえて、${count}個のWebアプリアイデアをJSON配列で生成してください。
+
+フォーマット:
+[
+  {
+    "name": "アプリ名",
+    "category": "カテゴリキー(game/tool/sns/lifestyle/education/entertainment/business)",
+    "type": "タイプキー",
+    "description": "30文字以内の説明",
+    "features": ["特徴1", "特徴2", "特徴3"],
+    "targetAudience": "ターゲット層",
+    "trendBasis": "取り入れたトレンド"
+  }
+]`;
+
+    try {
+      const result = await callAI(systemPrompt, userPrompt, { temperature: 0.9 });
+
+      // JSONを抽出してパース
+      const jsonMatch = result.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('JSON not found in response');
+
+      const ideas = JSON.parse(jsonMatch[0]);
+      return ideas.map(idea => ({
+        ...idea,
+        id: 'ai_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+        isAIGenerated: true,
+      }));
+    } catch (err) {
+      console.error('AI idea generation failed:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * アイデアをAIで評価・改良提案
+   */
+  async function evaluateWithAI(ideas, trends) {
+    const systemPrompt = `あなたはアプリ市場の分析の専門家です。与えられたアプリアイデアを現在のトレンドと市場性で評価し、具体的な改善提案をします。必ずJSON配列で回答してください。`;
+
+    const userPrompt = `以下のアイデアを評価し、それぞれに対して改善提案をしてください。
+
+【アイデア一覧】
+${ideas.map((idea, i) => `${i + 1}. ${idea.name} (${idea.category}): ${idea.description}`).join('\n')}
+
+【現在のトレンド】
+${trends.slice(0, 5).map(t => `- ${t.keyword}: ${t.description}`).join('\n')}
+
+フォーマット:
+[
+  {
+    "ideaIndex": 0,
+    "marketScore": 80,
+    "feasibilityScore": 90,
+    "monetizeScore": 70,
+    "viralScore": 60,
+    "improvement": "改善提案テキスト",
+    "trendFit": "マッチするトレンド名"
+  }
+]`;
+
+    try {
+      const result = await callAI(systemPrompt, userPrompt, { temperature: 0.5 });
+      const jsonMatch = result.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('JSON not found');
+      return JSON.parse(jsonMatch[0]);
+    } catch (err) {
+      console.error('AI evaluation failed:', err);
+      return null;
+    }
+  }
+
+  /**
+   * AIでアプリコードを生成
+   */
+  async function generateCode(idea, trends) {
+    const systemPrompt = `あなたはフロントエンドWebアプリ開発の専門家です。単一のHTMLファイルで動作する完全なWebアプリを生成します。
+
+ルール：
+1. HTML/CSS/JSを1つのファイルにまとめること
+2. 外部ライブラリは使わない（CDNも使わない）
+3. スマートフォンでも動作するレスポンシブデザイン
+4. ダークテーマの美しいUI
+5. 実際に動作するインタラクティブな機能
+6. 日本語UI
+7. コードだけを出力（説明文は不要）
+8. \`\`\`html と \`\`\` で囲むこと`;
+
+    const userPrompt = `以下のアプリを作成してください：
+
+名前: ${idea.name}
+カテゴリ: ${idea.category}
+説明: ${idea.description}
+特徴: ${(idea.features || []).join(', ')}
+ターゲット: ${idea.targetAudience || '一般ユーザー'}
+
+完全に動作する単一HTMLファイルを生成してください。`;
+
+    try {
+      const result = await callAI(systemPrompt, userPrompt, {
+        maxTokens: 4000,
+        temperature: 0.7,
+      });
+
+      // HTMLコードを抽出
+      const htmlMatch = result.match(/```html\s*([\s\S]*?)```/);
+      if (htmlMatch) return htmlMatch[1].trim();
+
+      // ```なしの場合、<!DOCTYPE から始まるコードを探す
+      const docMatch = result.match(/(<!DOCTYPE[\s\S]*<\/html>)/i);
+      if (docMatch) return docMatch[1].trim();
+
+      throw new Error('HTML code not found in response');
+    } catch (err) {
+      console.error('AI code generation failed:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * AI でマーケティングテキストを生成
+   */
+  async function generateMarketing(idea) {
+    const systemPrompt = `あなたはアプリマーケティングの専門家です。アプリのプロモーション素材を生成します。必ずJSONで回答してください。`;
+
+    const userPrompt = `以下のアプリの宣伝素材を生成してください：
+
+名前: ${idea.name}
+説明: ${idea.description}
+特徴: ${(idea.features || []).join(', ')}
+
+フォーマット:
+{
+  "tagline": "キャッチコピー（20文字以内）",
+  "twitter": "X投稿文（140文字以内、ハッシュタグ含む）",
+  "instagram": "Instagram投稿文（絵文字付き）",
+  "press": "プレスリリース（200文字程度）",
+  "hashTags": ["タグ1", "タグ2", "タグ3", "タグ4", "タグ5"],
+  "seoKeywords": ["キーワード1", "キーワード2", "キーワード3", "キーワード4", "キーワード5"]
+}`;
+
+    try {
+      const result = await callAI(systemPrompt, userPrompt, { temperature: 0.8 });
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('JSON not found');
+      return JSON.parse(jsonMatch[0]);
+    } catch (err) {
+      console.error('AI marketing generation failed:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * APIキーのテスト
+   */
+  async function testConnection() {
+    try {
+      const result = await callAI(
+        'テスト用です。',
+        '「接続成功」とだけ答えてください。',
+        { maxTokens: 20 }
+      );
+      return { success: true, message: result };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  }
+
+  return {
+    loadSettings,
+    saveSettings,
+    isAvailable,
+    testConnection,
+    generateTrendBasedIdeas,
+    evaluateWithAI,
+    generateCode,
+    generateMarketing,
+  };
+})();
+
 /**
  * Idea Generator Engine
  * カテゴリ別テンプレートを組み合わせてユニークなアプリアイデアを生成
@@ -2881,6 +4236,7 @@ const Monetization = (() => {
 /**
  * App Orchestrator
  * パイプライン全体の制御・UI更新・ZIPダウンロード
+ * トレンド分析 + アイデア蓄積 + AI連携対応
  */
 (function () {
   'use strict';
@@ -2896,10 +4252,12 @@ const Monetization = (() => {
     marketingKit: null,
     monetizePlan: null,
     running: false,
+    trends: [],
   };
 
   // ステップとセクションの対応
   const stepSections = {
+    0: 'trends',
     1: 'ideas',
     2: 'evaluation',
     3: 'build',
@@ -2909,7 +4267,8 @@ const Monetization = (() => {
   };
 
   const stepTitles = {
-    1: 'Step 1: アイデアを5つ生成中...',
+    0: 'Step 0: トレンド分析中...',
+    1: 'Step 1: アイデアを生成中...',
     2: 'Step 2: 評価・ランキング中...',
     3: 'Step 3: コードを自動生成中...',
     4: 'Step 4: アプリをプレビュー中...',
@@ -2918,6 +4277,7 @@ const Monetization = (() => {
   };
 
   const stepDoneTitles = {
+    0: 'Step 0: トレンド分析 完了',
     1: 'Step 1: アイデア生成 完了',
     2: 'Step 2: 評価・選定 完了',
     3: 'Step 3: 自動開発 完了',
@@ -2929,6 +4289,7 @@ const Monetization = (() => {
   // --- DOM References ---
   const sections = {
     start: document.getElementById('section-start'),
+    trends: document.getElementById('section-trends'),
     ideas: document.getElementById('section-ideas'),
     evaluation: document.getElementById('section-evaluation'),
     build: document.getElementById('section-build'),
@@ -2948,7 +4309,7 @@ const Monetization = (() => {
   }
 
   function showSection(name) {
-    Object.values(sections).forEach(s => s.classList.remove('active'));
+    Object.values(sections).forEach(s => { if (s) s.classList.remove('active'); });
     if (sections[name]) sections[name].classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -3011,6 +4372,131 @@ const Monetization = (() => {
     return n.toLocaleString('ja-JP');
   }
 
+  // --- AI Settings Modal ---
+  function initSettingsModal() {
+    const modal = document.getElementById('ai-settings-modal');
+    const btnOpen = document.getElementById('btn-settings');
+    const btnClose = document.getElementById('btn-close-settings');
+    const overlay = modal.querySelector('.modal__overlay');
+    const aiEnabled = document.getElementById('ai-enabled');
+    const apiKeyInput = document.getElementById('ai-api-key');
+    const modelSelect = document.getElementById('ai-model');
+    const statusText = document.getElementById('ai-status-text');
+    const btnTest = document.getElementById('btn-test-ai');
+    const testResult = document.getElementById('ai-test-result');
+    const btnResetBank = document.getElementById('btn-reset-bank');
+
+    function openModal() {
+      const settings = AIEngine.loadSettings();
+      aiEnabled.checked = settings.enabled;
+      apiKeyInput.value = settings.apiKey;
+      modelSelect.value = settings.model;
+      statusText.textContent = settings.enabled ? 'ON（AI生成モード）' : 'OFF（テンプレートモード）';
+      updateBankStats();
+      modal.hidden = false;
+    }
+
+    function closeModal() {
+      // Save on close
+      const settings = {
+        enabled: aiEnabled.checked,
+        apiKey: apiKeyInput.value.trim(),
+        model: modelSelect.value,
+      };
+      AIEngine.saveSettings(settings);
+      updateAIModeBadge();
+      modal.hidden = true;
+    }
+
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+
+    aiEnabled.addEventListener('change', () => {
+      statusText.textContent = aiEnabled.checked ? 'ON（AI生成モード）' : 'OFF（テンプレートモード）';
+    });
+
+    btnTest.addEventListener('click', async () => {
+      // Save settings first
+      AIEngine.saveSettings({
+        enabled: true,
+        apiKey: apiKeyInput.value.trim(),
+        model: modelSelect.value,
+      });
+      testResult.textContent = 'テスト中...';
+      testResult.style.color = 'var(--text-secondary)';
+      const result = await AIEngine.testConnection();
+      if (result.success) {
+        testResult.textContent = '接続成功! ' + result.message;
+        testResult.style.color = '#00ff88';
+      } else {
+        testResult.textContent = '接続失敗: ' + result.message;
+        testResult.style.color = '#ff6b6b';
+      }
+    });
+
+    btnResetBank.addEventListener('click', () => {
+      if (confirm('アイデアの履歴をすべて削除しますか？')) {
+        IdeaBank.reset();
+        updateBankStats();
+        updateBankSummary();
+      }
+    });
+  }
+
+  function updateBankStats() {
+    const el = document.getElementById('idea-bank-stats');
+    if (!el) return;
+    const stats = IdeaBank.getStats();
+    if (stats.totalIdeas === 0) {
+      el.innerHTML = 'まだアイデアの蓄積がありません。パイプラインを実行するとアイデアが蓄積されます。';
+    } else {
+      el.innerHTML = `<strong>${stats.totalIdeas}</strong>個のアイデアを蓄積済み（${stats.generations}世代、${stats.winners}回の勝者）`;
+    }
+  }
+
+  function updateAIModeBadge() {
+    const badge = document.getElementById('ai-mode-badge');
+    const icon = document.getElementById('ai-mode-icon');
+    const label = document.getElementById('ai-mode-label');
+    if (!badge) return;
+
+    if (AIEngine.isAvailable()) {
+      badge.className = 'ai-mode-badge ai-mode-badge--on';
+      icon.innerHTML = '&#9889;';
+      label.textContent = 'AI生成モード';
+    } else {
+      badge.className = 'ai-mode-badge ai-mode-badge--off';
+      icon.innerHTML = '&#9888;';
+      label.textContent = 'テンプレートモード（設定でAIを有効化）';
+    }
+  }
+
+  function updateBankSummary() {
+    const container = document.getElementById('bank-summary');
+    const content = document.getElementById('bank-summary-content');
+    if (!container || !content) return;
+
+    const stats = IdeaBank.getStats();
+    if (!stats.hasHistory) {
+      container.hidden = true;
+      return;
+    }
+
+    container.hidden = false;
+    const insights = IdeaBank.extractInsights();
+    if (!insights) return;
+
+    let html = `<div>${insights.totalIdeas}個のアイデアを蓄積中（${insights.totalGenerations}世代目）</div>`;
+    if (insights.winningFeatures.length > 0) {
+      html += `<div style="margin-top:4px">勝ちパターン: ${insights.winningFeatures.map(f => f.feature).join('、')}</div>`;
+    }
+    if (insights.recentWinners.length > 0) {
+      html += `<div style="margin-top:4px">前回の勝者: ${escapeHtml(insights.recentWinners[insights.recentWinners.length - 1].name)}</div>`;
+    }
+    content.innerHTML = html;
+  }
+
   // --- Pipeline Steps ---
 
   async function runPipeline() {
@@ -3020,10 +4506,12 @@ const Monetization = (() => {
       return;
     }
     state.running = true;
-
     document.getElementById('btn-start').disabled = true;
 
-    // Step 1: アイデア生成
+    // Step 0: トレンド分析
+    await stepAnalyzeTrends(selectedCategories);
+
+    // Step 1: アイデア生成（トレンド + 蓄積 + AI）
     await stepGenerateIdeas(selectedCategories);
 
     // Step 2: 評価
@@ -3050,27 +4538,142 @@ const Monetization = (() => {
     return Array.from(checkboxes).map(cb => cb.value);
   }
 
+  // --- Step 0: トレンド分析 ---
+  async function stepAnalyzeTrends(categories) {
+    updatePipelineTitle('Step 0: トレンドを分析中...');
+    showSection('trends');
+    await sleep(300);
+
+    const trends = Trends.getTrendsForCategories(categories);
+    state.trends = trends;
+
+    const content = document.getElementById('trends-content');
+    content.innerHTML = '';
+
+    // トレンドカードを順番に表示
+    for (let i = 0; i < Math.min(trends.length, 8); i++) {
+      const t = trends[i];
+      const card = document.createElement('div');
+      card.className = 'trend-card';
+      card.style.animationDelay = (i * 0.1) + 's';
+      card.innerHTML = `
+        <div class="trend-card__hotness">${t.hotness}</div>
+        <div class="trend-card__info">
+          <div class="trend-card__keyword">${escapeHtml(t.keyword)}</div>
+          <div class="trend-card__desc">${escapeHtml(t.description)}</div>
+          <div class="trend-card__examples">${t.examples.join(' / ')}</div>
+        </div>
+      `;
+      content.appendChild(card);
+      await sleep(150);
+    }
+
+    // トレンド組み合わせ提案
+    const combos = Trends.suggestCombinations(2);
+    if (combos.length > 0) {
+      const comboSection = document.createElement('div');
+      comboSection.style.cssText = 'margin-top:12px;padding:12px;background:rgba(108,92,231,0.1);border-radius:8px;border:1px solid rgba(108,92,231,0.2)';
+      comboSection.innerHTML = `
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent-light);margin-bottom:6px">&#128161; トレンド掛け合わせアイデア</div>
+        ${combos.map(c => `<div style="font-size:0.8rem;color:var(--text-secondary);padding:4px 0">
+          <strong>${c.trends.join(' × ')}</strong>: ${escapeHtml(c.suggestion)}
+        </div>`).join('')}
+      `;
+      content.appendChild(comboSection);
+    }
+
+    await sleep(1500);
+    updatePipelineTitle('Step 0: トレンド分析 完了');
+  }
+
   // --- Step 1: アイデア生成 ---
   async function stepGenerateIdeas(categories) {
     updatePipeline(1);
     showSection('ideas');
     await sleep(400);
 
-    state.ideas = IdeaGenerator.generateIdeas(categories, 5);
+    const sourceInfo = document.getElementById('ideas-source-info');
+    const insights = IdeaBank.extractInsights();
+    const useAI = AIEngine.isAvailable();
 
+    let newIdeas = [];
+    let evolvedIdeas = [];
+    let aiIdeas = [];
+
+    // 1. 蓄積からの進化アイデア（過去データがあれば）
+    if (insights && insights.totalIdeas >= 3) {
+      updatePipelineTitle('Step 1: 過去のアイデアを進化させ中...');
+      evolvedIdeas = IdeaBank.evolveIdeas(categories, state.trends, 2);
+      await sleep(500);
+    }
+
+    // 2. AI生成（APIキーがあれば）
+    if (useAI) {
+      updatePipelineTitle('Step 1: AIがトレンドを分析してアイデアを生成中...');
+      try {
+        aiIdeas = await AIEngine.generateTrendBasedIdeas(
+          categories, state.trends, insights, 3
+        );
+      } catch (err) {
+        console.error('AI generation failed, falling back to template:', err);
+        sourceInfo.innerHTML = '&#9888; AI生成に失敗しました。テンプレートモードで生成します。';
+      }
+    }
+
+    // 3. テンプレートベースの生成（残り枠を埋める）
+    const needed = 5 - evolvedIdeas.length - aiIdeas.length;
+    if (needed > 0) {
+      updatePipelineTitle('Step 1: テンプレートからアイデアを生成中...');
+      newIdeas = IdeaGenerator.generateIdeas(categories, needed);
+      // トレンドに基づく特徴を追加
+      newIdeas = newIdeas.map(idea => {
+        const hints = Trends.getEnhancementHints(idea);
+        if (hints.trends.length > 0) {
+          const trendFeature = hints.trends[0].keyword + '対応';
+          if (!idea.features.includes(trendFeature)) {
+            idea.features.push(trendFeature);
+          }
+          idea.trendBasis = hints.trends[0].keyword;
+        }
+        return idea;
+      });
+    }
+
+    // 全アイデアを合体
+    state.ideas = [...evolvedIdeas, ...aiIdeas, ...newIdeas].slice(0, 5);
+
+    // ソース情報を表示
+    const parts = [];
+    if (evolvedIdeas.length > 0) parts.push(`${evolvedIdeas.length}個は過去のアイデアから進化`);
+    if (aiIdeas.length > 0) parts.push(`${aiIdeas.length}個はAIが生成`);
+    if (newIdeas.length > 0) parts.push(`${newIdeas.length}個はテンプレート＋トレンド`);
+    if (insights) parts.push(`累計${insights.totalIdeas}個のアイデアを蓄積中`);
+    sourceInfo.innerHTML = parts.join(' / ');
+
+    // アイデアをバンクに保存
+    IdeaBank.addIdeas(state.ideas);
+
+    // カードを表示
     const grid = document.getElementById('ideas-grid');
     grid.innerHTML = '';
 
     state.ideas.forEach(idea => {
       const card = document.createElement('div');
       card.className = 'idea-card';
+
+      let badges = '';
+      if (idea.isEvolved) badges += '<span class="idea-card__badge idea-card__badge--evolved">進化</span>';
+      if (idea.isAIGenerated) badges += '<span class="idea-card__badge idea-card__badge--ai">AI</span>';
+      if (idea.trendBasis) badges += `<span class="idea-card__badge idea-card__badge--trend">${escapeHtml(idea.trendBasis)}</span>`;
+
       card.innerHTML = `
         <span class="idea-card__category idea-card__category--${idea.category}">${getCategoryLabel(idea.category)}</span>
+        ${badges}
         <h3 class="idea-card__name">${escapeHtml(idea.name)}</h3>
         <p class="idea-card__desc">${escapeHtml(idea.description)}</p>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px">&#127919; ${escapeHtml(idea.targetAudience)}</p>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px">&#127919; ${escapeHtml(idea.targetAudience || '')}</p>
         <ul class="idea-card__features">
-          ${idea.features.map(f => `<li class="idea-card__feature">${escapeHtml(f)}</li>`).join('')}
+          ${(idea.features || []).map(f => `<li class="idea-card__feature">${escapeHtml(f)}</li>`).join('')}
         </ul>
       `;
       grid.appendChild(card);
@@ -3087,6 +4690,9 @@ const Monetization = (() => {
 
     state.ranked = Evaluator.evaluateAndRank(state.ideas);
     state.winner = state.ranked[0];
+
+    // 勝者をバンクに記録
+    IdeaBank.markWinner(state.winner.idea.id);
 
     const list = document.getElementById('evaluation-list');
     list.innerHTML = '';
@@ -3148,30 +4754,58 @@ const Monetization = (() => {
     const status = document.getElementById('build-status');
     const codeOutput = document.getElementById('code-output');
 
-    const buildSteps = [
-      { progress: 10, text: 'プロジェクト構造を作成中...' },
-      { progress: 25, text: 'HTMLテンプレートを選定中...' },
-      { progress: 40, text: 'UIコンポーネントを構築中...' },
-      { progress: 55, text: 'インタラクションを実装中...' },
-      { progress: 70, text: 'スタイリングを適用中...' },
-      { progress: 85, text: '広告スペースを配置中...' },
-      { progress: 95, text: 'コードを最適化中...' },
-      { progress: 100, text: '完了！' },
-    ];
+    const useAI = AIEngine.isAvailable();
 
-    // コード生成
-    state.winnerCode = Builder.buildApp(state.winner.idea);
+    if (useAI) {
+      // AI生成モード
+      const buildSteps = [
+        { progress: 15, text: 'AIがアプリ設計を分析中...' },
+        { progress: 30, text: 'AIがUIコンポーネントを設計中...' },
+        { progress: 50, text: 'AIがコードを書いています...' },
+        { progress: 70, text: 'AIがスタイリングを適用中...' },
+        { progress: 85, text: 'AIがインタラクションを実装中...' },
+      ];
 
-    // プログレスアニメーション
-    for (const step of buildSteps) {
-      fill.style.width = step.progress + '%';
-      status.textContent = step.text;
+      for (const step of buildSteps) {
+        fill.style.width = step.progress + '%';
+        status.textContent = step.text;
+        await sleep(800);
+      }
 
-      // コードを段階的に表示
-      const displayLength = Math.floor(state.winnerCode.length * (step.progress / 100));
-      codeOutput.textContent = state.winnerCode.substring(0, displayLength);
+      try {
+        state.winnerCode = await AIEngine.generateCode(state.winner.idea, state.trends);
+        fill.style.width = '100%';
+        status.textContent = 'AI生成完了！';
+      } catch (err) {
+        console.error('AI code gen failed, using template:', err);
+        status.textContent = 'AI生成失敗、テンプレートを使用...';
+        await sleep(500);
+        state.winnerCode = Builder.buildApp(state.winner.idea);
+        fill.style.width = '100%';
+        status.textContent = 'テンプレート生成完了！';
+      }
+    } else {
+      // テンプレートモード
+      const buildSteps = [
+        { progress: 10, text: 'プロジェクト構造を作成中...' },
+        { progress: 25, text: 'HTMLテンプレートを選定中...' },
+        { progress: 40, text: 'UIコンポーネントを構築中...' },
+        { progress: 55, text: 'インタラクションを実装中...' },
+        { progress: 70, text: 'スタイリングを適用中...' },
+        { progress: 85, text: '広告スペースを配置中...' },
+        { progress: 95, text: 'コードを最適化中...' },
+        { progress: 100, text: '完了！' },
+      ];
 
-      await sleep(400);
+      state.winnerCode = Builder.buildApp(state.winner.idea);
+
+      for (const step of buildSteps) {
+        fill.style.width = step.progress + '%';
+        status.textContent = step.text;
+        const displayLength = Math.floor(state.winnerCode.length * (step.progress / 100));
+        codeOutput.textContent = state.winnerCode.substring(0, displayLength);
+        await sleep(400);
+      }
     }
 
     codeOutput.textContent = state.winnerCode;
@@ -3202,9 +4836,21 @@ const Monetization = (() => {
     showSection('marketing');
     await sleep(400);
 
-    state.marketingKit = Marketing.generateKit(state.winner.idea);
-    const kit = state.marketingKit;
+    const useAI = AIEngine.isAvailable();
 
+    if (useAI) {
+      updatePipelineTitle('Step 5: AIが宣伝素材を作成中...');
+      try {
+        state.marketingKit = await AIEngine.generateMarketing(state.winner.idea);
+      } catch (err) {
+        console.error('AI marketing failed, using template:', err);
+        state.marketingKit = Marketing.generateKit(state.winner.idea);
+      }
+    } else {
+      state.marketingKit = Marketing.generateKit(state.winner.idea);
+    }
+
+    const kit = state.marketingKit;
     const grid = document.getElementById('marketing-grid');
     grid.innerHTML = '';
 
@@ -3232,12 +4878,12 @@ const Monetization = (() => {
       {
         icon: '&#127991;',
         title: 'ハッシュタグ',
-        body: `<div class="marketing-card__tags">${kit.hashTags.map(t => `<span class="marketing-card__tag">#${escapeHtml(t)}</span>`).join('')}</div>`,
+        body: `<div class="marketing-card__tags">${(kit.hashTags || []).map(t => `<span class="marketing-card__tag">#${escapeHtml(t)}</span>`).join('')}</div>`,
       },
       {
         icon: '&#128270;',
         title: 'SEOキーワード',
-        body: `<div class="marketing-card__tags">${kit.seoKeywords.map(k => `<span class="marketing-card__tag">${escapeHtml(k)}</span>`).join('')}</div>`,
+        body: `<div class="marketing-card__tags">${(kit.seoKeywords || []).map(k => `<span class="marketing-card__tag">${escapeHtml(k)}</span>`).join('')}</div>`,
       },
     ];
 
@@ -3331,7 +4977,6 @@ const Monetization = (() => {
     state.running = false;
     showSection('download');
     updatePipelineTitle('全ステップ完了！各ステップをタップで確認できます');
-    // 全ステップ完了
     pipelineSteps.forEach(step => {
       step.classList.remove('active', 'viewing');
       step.classList.add('completed');
@@ -3348,90 +4993,61 @@ const Monetization = (() => {
     const zip = new JSZip();
     const folder = zip.folder(state.winner.idea.name.replace(/\s+/g, '_'));
 
-    // アプリコード
     folder.file('index.html', state.winnerCode);
 
-    // マーケティングキット
     const kit = state.marketingKit;
     const marketingText = [
       '=== マーケティングキット ===',
       '',
-      '【キャッチコピー】',
-      kit.tagline,
-      '',
-      '【X (Twitter) 投稿文】',
-      kit.twitter,
-      '',
-      '【Instagram 投稿文】',
-      kit.instagram,
-      '',
-      '【プレスリリース】',
-      kit.press,
-      '',
-      '【ハッシュタグ】',
-      kit.hashTags.map(t => '#' + t).join(' '),
-      '',
-      '【SEOキーワード】',
-      kit.seoKeywords.join(', '),
+      '【キャッチコピー】', kit.tagline, '',
+      '【X (Twitter) 投稿文】', kit.twitter, '',
+      '【Instagram 投稿文】', kit.instagram, '',
+      '【プレスリリース】', kit.press, '',
+      '【ハッシュタグ】', (kit.hashTags || []).map(t => '#' + t).join(' '), '',
+      '【SEOキーワード】', (kit.seoKeywords || []).join(', '),
     ].join('\n');
     folder.file('marketing-kit.txt', marketingText);
 
-    // マネタイズプラン
     const plan = state.monetizePlan;
     const monetizeText = [
-      '=== マネタイズプラン ===',
-      '',
+      '=== マネタイズプラン ===', '',
       ...plan.strategies.map(s => [
         `【${s.name}】${s.recommended ? ' ★推奨' : ''}`,
-        s.description,
-        '',
+        s.description, '',
         'ステップ:',
-        ...s.steps.map((step, i) => `  ${i + 1}. ${step}`),
-        '',
-        `推定収益: ${formatNumber(s.revenueEstimate.min)} 〜 ${formatNumber(s.revenueEstimate.max)} ${s.revenueEstimate.unit}`,
-        '',
+        ...s.steps.map((step, i) => `  ${i + 1}. ${step}`), '',
+        `推定収益: ${formatNumber(s.revenueEstimate.min)} 〜 ${formatNumber(s.revenueEstimate.max)} ${s.revenueEstimate.unit}`, '',
       ]).flat(),
       '【ロードマップ】',
       ...plan.roadmap.map(p => [
         `${p.phase} - ${p.title}`,
-        ...p.tasks.map(t => `  - ${t}`),
-        '',
+        ...p.tasks.map(t => `  - ${t}`), '',
       ]).flat(),
       `合計推定月間収益: ${formatNumber(plan.combinedRevenue.min)} 〜 ${formatNumber(plan.combinedRevenue.max)} ${plan.combinedRevenue.unit}`,
     ].join('\n');
     folder.file('monetize-plan.txt', monetizeText);
 
-    // 広告コード
     folder.file('ad-code-sample.html', plan.adCode);
 
-    // README
     const readme = [
-      `# ${state.winner.idea.name}`,
-      '',
-      state.winner.idea.description,
-      '',
+      `# ${state.winner.idea.name}`, '',
+      state.winner.idea.description, '',
       `ターゲット: ${state.winner.idea.targetAudience}`,
-      `カテゴリ: ${getCategoryLabel(state.winner.idea.category)}`,
-      '',
+      `カテゴリ: ${getCategoryLabel(state.winner.idea.category)}`, '',
       '## 機能',
-      ...state.winner.idea.features.map(f => `- ${f}`),
-      '',
+      ...(state.winner.idea.features || []).map(f => `- ${f}`), '',
       '## 使い方',
       '1. index.html をブラウザで開く',
-      '2. またはWebサーバーにデプロイする',
-      '',
+      '2. またはWebサーバーにデプロイする', '',
       '## マネタイズ',
       `推奨モデル: ${plan.strategies[0].name}`,
-      `推定月間収益: ${formatNumber(plan.combinedRevenue.min)} 〜 ${formatNumber(plan.combinedRevenue.max)} ${plan.combinedRevenue.unit}`,
-      '',
-      '詳細は monetize-plan.txt を参照。',
-      '',
+      `推定月間収益: ${formatNumber(plan.combinedRevenue.min)} 〜 ${formatNumber(plan.combinedRevenue.max)} ${plan.combinedRevenue.unit}`, '',
+      '詳細は monetize-plan.txt を参照。', '',
       '---',
       'Generated by Idea Monetizer',
     ].join('\n');
     folder.file('README.md', readme);
 
-    // 生成 & ダウンロード
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -3453,28 +5069,26 @@ const Monetization = (() => {
       marketingKit: null,
       monetizePlan: null,
       running: false,
+      trends: [],
     };
     pipelineSteps.forEach(s => s.classList.remove('active', 'completed', 'viewing'));
     document.getElementById('btn-start').disabled = false;
     updatePipelineTitle('カテゴリを選んでスタート');
+    updateBankSummary();
     showSection('start');
   }
 
   // --- Utility ---
   function getCategoryLabel(cat) {
     const labels = {
-      game: 'ゲーム',
-      tool: 'ツール',
-      sns: 'SNS',
-      lifestyle: 'ライフスタイル',
-      education: '教育',
-      entertainment: 'エンタメ',
-      business: 'ビジネス',
+      game: 'ゲーム', tool: 'ツール', sns: 'SNS',
+      lifestyle: 'ライフスタイル', education: '教育',
+      entertainment: 'エンタメ', business: 'ビジネス',
     };
     return labels[cat] || cat;
   }
 
-  // --- Global copy function (used in marketing cards) ---
+  // --- Global copy function ---
   window.copyText = function (btn) {
     const copyEl = btn.parentElement;
     const text = copyEl.textContent.replace('コピー', '').trim();
@@ -3485,10 +5099,18 @@ const Monetization = (() => {
     });
   };
 
-  // --- Event Listeners ---
-  document.getElementById('btn-start').addEventListener('click', runPipeline);
-  document.getElementById('btn-download').addEventListener('click', downloadZip);
-  document.getElementById('btn-restart').addEventListener('click', restart);
+  // --- Init ---
+  function init() {
+    initSettingsModal();
+    updateAIModeBadge();
+    updateBankSummary();
+
+    document.getElementById('btn-start').addEventListener('click', runPipeline);
+    document.getElementById('btn-download').addEventListener('click', downloadZip);
+    document.getElementById('btn-restart').addEventListener('click', restart);
+  }
+
+  init();
 
 })();
 
