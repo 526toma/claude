@@ -1681,7 +1681,7 @@ function buyUpgrade(type,cost){
 }
 setInterval(()=>{count+=autoRate*multi;el.count.textContent=formatNum(count);},1000);
 function formatNum(n){if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n;}
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     puzzle: (idea) => htmlHead(idea.name, `
 .grid { display: grid; grid-template-columns: repeat(4,60px); gap: 4px; margin: 20px auto; width: fit-content; }
@@ -1754,7 +1754,7 @@ function flipCard(el,v){
   }
 }
 initGame();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     quiz: (idea) => htmlHead(idea.name, `
 .quiz-option { display: block; width: 100%; padding: 14px; margin: 8px 0; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e8eaf0; font-size: 1rem; cursor: pointer; text-align: left; transition: all 0.2s; }
@@ -1811,7 +1811,7 @@ function showResult(){
   r.innerHTML='<div class="score">'+score+'/'+quizData.length+'</div><p style="font-size:1.2rem;margin:12px 0">正答率 '+pct+'%</p><p style="color:#9ea3b5">'+(pct>=80?'素晴らしい！':pct>=50?'なかなか！':'もう一度挑戦！')+'</p><button onclick="current=0;score=0;document.getElementById(\\'result-area\\').style.display=\\'none\\';document.getElementById(\\'quiz-area\\').style.display=\\'block\\';showQ();" style="margin-top:16px">もう一度</button>';
 }
 showQ();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     memory: (idea) => appTemplates.puzzle(idea),
 
@@ -1857,7 +1857,7 @@ function hitKey(lane){
     if(r.top>a.bottom-150){sc+=10;document.getElementById('rscore').textContent=sc;n.remove();}});
 }
 document.addEventListener('keydown',e=>{const i=keys.indexOf(e.key.toLowerCase());if(i>=0)hitKey(i);});
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     word: (idea) => htmlHead(idea.name, `
 .word-grid { display: grid; grid-template-columns: repeat(5,48px); gap: 6px; margin: 16px auto; width: fit-content; }
@@ -1908,7 +1908,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Backspace')del();
   else if(/^[a-zA-Z]$/.test(e.key))input(e.key.toUpperCase());
 });
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     tower: (idea) => appTemplates.clicker(idea),
     slider: (idea) => appTemplates.puzzle(idea),
@@ -1952,7 +1952,7 @@ function genQR(){
 }
 function downloadQR(){const a=document.createElement('a');a.download='qrcode.png';a.href=document.getElementById('qr-canvas').toDataURL();a.click();}
 genQR();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     pomodoro: (idea) => htmlHead(idea.name, `
 .timer-display { font-size: 5rem; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; margin: 20px 0; }
@@ -1998,7 +1998,7 @@ function resetTimer(){workTime=parseInt(document.getElementById('workMin').value
   document.getElementById('mode').textContent='ワークタイム';document.getElementById('toggleBtn').innerHTML='&#9654; スタート';updateDisplay();}
 function updateDots(){const d=document.getElementById('dots');d.innerHTML='';for(let i=0;i<Math.max(sessions,4);i++){const s=document.createElement('div');s.className='session-dot'+(i<sessions?' done':'');d.appendChild(s);}}
 updateDots();updateDisplay();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     password: (idea) => htmlHead(idea.name, `
 .pw-display { font-family: 'Fira Code', monospace; font-size: 1.3rem; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 10px; text-align: center; word-break: break-all; letter-spacing: 2px; margin: 16px 0; user-select: all; }
@@ -2055,7 +2055,7 @@ function gen(){
   document.getElementById('str-label').textContent=labels[s];
 }
 gen();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     notepad: (idea) => htmlHead(idea.name, `
 #editor { width: 100%; min-height: 300px; padding: 16px; font-family: inherit; font-size: 0.95rem; line-height: 1.8; resize: vertical; }
@@ -2088,7 +2088,7 @@ ed.addEventListener('input',update);update();
 function download(){const b=new Blob([ed.value],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='memo.txt';a.click();}
 function clearAll(){if(confirm('クリアしますか？')){ed.value='';update();}}
 function copyAll(){navigator.clipboard.writeText(ed.value);}
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     image_resize: (idea) => appTemplates.notepad(idea),
     color: (idea) => appTemplates.notepad(idea),
@@ -2131,7 +2131,7 @@ function post(){
   inp.value='';document.getElementById('cnt').textContent='0/140';render();
 }
 render();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     photo_wall: (idea) => appTemplates.diary(idea),
     question: (idea) => appTemplates.diary(idea),
@@ -2184,7 +2184,7 @@ function addHabit(){const inp=document.getElementById('newHabit');if(!inp.value.
   habits.push({name:inp.value.trim(),days:[false,false,false,false,false,false,false]});inp.value='';save();render();}
 function save(){localStorage.setItem('habits_data',JSON.stringify(habits));}
 render();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     expense: (idea) => appTemplates.habit(idea),
     meal_log: (idea) => appTemplates.diary(idea),
@@ -2243,7 +2243,7 @@ function show(){
 function next(){idx=(idx+1)%cards.length;show();}
 function prev(){idx=(idx-1+cards.length)%cards.length;show();}
 show();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     typing: (idea) => appTemplates.quiz(idea),
     kanji: (idea) => appTemplates.quiz(idea),
@@ -2300,7 +2300,7 @@ function divine(){
     '<p style="margin-top:16px;font-size:0.9rem">ラッキーカラー: <span style="color:'+f.color+'">'+luckyColors[lc]+'</span></p>'+
     '<button onclick="divine()" style="margin-top:16px">&#128260; もう一度占う</button>';
 }
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     meme: (idea) => appTemplates.fortune(idea),
     nickname: (idea) => htmlHead(idea.name, `
@@ -2341,7 +2341,7 @@ function generate(){
     '<div class="name-item"><span>候補'+(i+2)+'</span><span style="color:#a29bfe">'+n+'</span></div>'
   ).join('');
 }
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     compatibility: (idea) => htmlHead(idea.name, `
 .compat-score { font-size: 5rem; font-weight: 800; text-align: center; margin: 20px 0; }
@@ -2387,7 +2387,7 @@ function check(){
   const key=Object.keys(msgs).reverse().find(k=>score>=parseInt(k));
   document.getElementById('msg').textContent=msgs[key];
 }
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     soundboard: (idea) => appTemplates.fortune(idea),
     roulette: (idea) => htmlHead(idea.name, `
@@ -2453,7 +2453,7 @@ function spin(){
   },3200);
 }
 buildWheel();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     // --- ビジネス系 ---
     kanban: (idea) => htmlHead(idea.name, `
@@ -2512,7 +2512,7 @@ function move(from,idx,to){const t=tasks[from].splice(idx,1)[0];tasks[to].push(t
 function del(col,idx){tasks[col].splice(idx,1);save();render();}
 function save(){localStorage.setItem('kanban_tasks',JSON.stringify(tasks));}
 render();
-</script>` + htmlFoot,
+<\/script>` + htmlFoot,
 
     invoice: (idea) => appTemplates.kanban(idea),
     card_reader: (idea) => appTemplates.notepad(idea),
@@ -2850,7 +2850,7 @@ const Monetization = (() => {
   data-ad-slot="XXXXXXXXXX"
   data-ad-format="auto"
   data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>`;
+<script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>`;
   }
 
   return { generatePlan };
