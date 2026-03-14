@@ -375,14 +375,17 @@ body::before{
 .breadcrumb .sep{color:var(--text3)}
 
 /* ===== Human Idea Input ===== */
-#secHumanIdea .field{margin-bottom:14px}
-#secHumanIdea .field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:6px}
-#secHumanIdea .field input{
-  width:100%;padding:10px 12px;background:var(--bg3);
-  border:1px solid var(--border2);border-radius:var(--r-sm);
-  color:var(--text);font-size:0.88rem;font-family:var(--font);outline:none;
+#secHumanIdea .human-input-area{
+  display:flex;gap:8px;margin-bottom:16px;
 }
-#secHumanIdea .field input:focus{border-color:var(--accent)}
+#secHumanIdea .human-input-area textarea{
+  flex:1;padding:12px 14px;background:var(--bg3);
+  border:1px solid var(--border2);border-radius:var(--r-md);
+  color:var(--text);font-size:0.92rem;font-family:var(--font);outline:none;
+  resize:vertical;min-height:60px;line-height:1.6;
+}
+#secHumanIdea .human-input-area textarea:focus{border-color:var(--accent)}
+#secHumanIdea .human-input-area textarea::placeholder{color:var(--text3)}
 
 /* ===== Loading ===== */
 .loading{text-align:center;padding:40px 0}
@@ -639,25 +642,12 @@ body::before{
   <div class="section" id="secHumanIdea">
     <div class="card">
       <div class="card-title"><span class="icon">&#9997;</span>自分のアイデアを入力</div>
-      <div class="field">
-        <label>アプリ名</label>
-        <input type="text" id="humanName" placeholder="例: タイムトラベル家計簿">
-      </div>
-      <div class="field">
-        <label>説明</label>
-        <input type="text" id="humanDesc" placeholder="例: 過去の支出をAIが分析して未来の出費を予測">
-      </div>
-      <div class="field">
-        <label>特徴（カンマ区切り）</label>
-        <input type="text" id="humanFeatures" placeholder="例: AI予測, データ可視化, 自動カテゴリ分け">
-      </div>
-      <div class="field">
-        <label>ターゲット</label>
-        <input type="text" id="humanAudience" placeholder="例: 20〜30代の社会人">
+      <p style="font-size:0.84rem;color:var(--text2);margin-bottom:14px">思いついたアイデアを自由に書いてください。AIが名前や特徴を自動で考えます。</p>
+      <div class="human-input-area">
+        <textarea id="humanIdeaText" placeholder="例: 歩いた距離に応じてRPGのキャラが成長していくアプリ"></textarea>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="btnAddHuman" style="flex:1"><span>&#10133;</span> アイデアを追加</button>
-        <button class="btn btn-secondary" id="btnDiveHuman" style="flex:1"><span>&#128269;</span> そのまま深掘り</button>
+        <button class="btn btn-primary" id="btnDiveHuman" style="flex:1"><span>&#128269;</span> このアイデアを深掘り</button>
       </div>
     </div>
   </div>
@@ -1403,45 +1393,55 @@ function goBackFromDive(){
 /* ============================================================
    HUMAN IDEA
    ============================================================ */
-function buildHumanIdea(){
-  const name = $('humanName').value.trim();
-  const desc = $('humanDesc').value.trim();
-  if(!name){ alert('アプリ名を入力してください'); return null; }
-  const features = $('humanFeatures').value.trim() ? $('humanFeatures').value.split(/[,、]/).map(s=>s.trim()).filter(Boolean) : [];
-  const audience = $('humanAudience').value.trim() || '';
+function buildHumanIdeaFromText(text){
+  // テキストから簡易的に名前を生成
+  const short = text.length > 20 ? text.slice(0,20)+'...' : text;
   return {
-    name, desc: desc||name,
+    name: short,
+    desc: text,
     trend:'人間のアイデア', hit:'オリジナル',
-    features, audience, potential:'ユーザー発のオリジナルアイデア',
-    isHuman: true
+    features:[], audience:'',
+    potential:'ユーザー発のオリジナルアイデア',
+    catchcopy:'あなたの頭の中にあったアイデア、形にしよう。',
+    story: text,
+    excitement: 70 + Math.floor(Math.random()*30),
+    isHuman: true,
+    rawIdea: text
   };
 }
 
-function addHumanIdea(){
-  const idea = buildHumanIdea();
-  if(!idea) return;
-  currentIdeas.push(idea);
-  setStep(4,'アイデア完成！');
-  renderIdeas(currentIdeas);
-  showSection('secIdeas');
-  clearHumanForm();
-}
+async function diveHumanIdea(){
+  const text = $('humanIdeaText').value.trim();
+  if(!text){ alert('アイデアを入力してください'); return; }
 
-function diveHumanIdea(){
-  const idea = buildHumanIdea();
-  if(!idea) return;
+  const idea = buildHumanIdeaFromText(text);
+
+  // AI接続時はアイデアテキストからタイトルや特徴を生成
+  if(AI.on){
+    setStep(4,'AIがアイデアを分析中...');
+    showSection('secDeepDive');
+    $('secDeepDive').innerHTML = '<div class="loading"><div class="loader"></div><div class="loading-text">あなたのアイデアをAIが分析中...</div></div>';
+    try {
+      const sys = `ユーザーのアイデアのメモから、アプリの企画情報を生成してください。必ず以下のJSONだけ返してください:
+{"name":"キャッチーなアプリ名","desc":"30字以内の説明","features":["特徴1","特徴2","特徴3"],"audience":"ターゲット","catchcopy":"心を掴むキャッチコピー（1文）","story":"想像してみて。で始まる具体的なシナリオ（2-3文）","excitement":85}`;
+      const raw = await AI.call(sys, text, {temp:0.9, max:500});
+      const m = raw.match(/\{[\s\S]*\}/);
+      if(m){
+        const parsed = JSON.parse(m[0]);
+        Object.assign(idea, parsed);
+        idea.trend = '人間のアイデア';
+        idea.hit = 'オリジナル';
+        idea.rawIdea = text;
+        idea.isHuman = true;
+      }
+    } catch(e){ console.error('AI idea parse failed:', e); }
+  }
+
   currentIdeas = [idea];
   diveHistory = [{ideas:[idea], label:'自分のアイデア'}];
   setStep(4,'深掘り分析中: '+idea.name);
-  clearHumanForm();
+  $('humanIdeaText').value = '';
   deepDive(idea);
-}
-
-function clearHumanForm(){
-  $('humanName').value='';
-  $('humanDesc').value='';
-  $('humanFeatures').value='';
-  $('humanAudience').value='';
 }
 
 function esc(s){
@@ -1482,7 +1482,6 @@ $('btnHumanIdea').addEventListener('click', ()=>{
   showSection('secHumanIdea');
   setStep(1,'自分のアイデアを入力');
 });
-$('btnAddHuman').addEventListener('click', addHumanIdea);
 $('btnDiveHuman').addEventListener('click', diveHumanIdea);
 
 // Init
