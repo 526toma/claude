@@ -255,6 +255,103 @@ body::before{
   border-radius:var(--r-md);
   font-size:0.82rem;color:var(--green);font-weight:600;
 }
+.combo-card.clickable{cursor:pointer;transition:all 0.25s}
+.combo-card.clickable:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.combo-card.clickable:active{transform:scale(0.98)}
+.combo-tap-hint{
+  margin-top:10px;font-size:0.7rem;color:var(--text3);text-align:right;
+  opacity:0.7;
+}
+
+/* ===== Deep Dive ===== */
+.dive-back{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:1px solid var(--border2);color:var(--text2);
+  padding:8px 16px;border-radius:var(--r-full);font-size:0.82rem;
+  cursor:pointer;font-family:var(--font);margin-bottom:20px;transition:all 0.2s;
+}
+.dive-back:hover{border-color:var(--accent);color:var(--accent2)}
+
+.dive-header{
+  background:var(--card);border:1px solid var(--border2);border-radius:var(--r-lg);
+  padding:24px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.dive-header::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--cyan),var(--green));
+}
+.dive-name{
+  font-size:1.3rem;font-weight:800;margin-bottom:6px;
+  background:linear-gradient(135deg,var(--accent2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.dive-desc{color:var(--text2);font-size:0.9rem;line-height:1.6}
+
+.dive-grid{display:grid;gap:12px;margin-bottom:16px}
+@media(min-width:600px){.dive-grid.two{grid-template-columns:1fr 1fr}}
+
+.dive-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:var(--r-lg);
+  padding:20px;animation:fadeUp 0.4s ease both;
+}
+.dive-card-title{
+  font-size:0.88rem;font-weight:700;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.dive-card-title .ic{font-size:1.1rem}
+.dive-list{list-style:none}
+.dive-list li{
+  padding:6px 0;font-size:0.82rem;color:var(--text2);
+  border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px;
+}
+.dive-list li:last-child{border-bottom:none}
+.dive-list li::before{content:'\2022';color:var(--accent2);font-weight:700;flex-shrink:0}
+
+.dive-variation{
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:14px;margin-bottom:8px;
+  cursor:pointer;transition:all 0.2s;
+}
+.dive-variation:hover{border-color:var(--cyan);background:var(--card)}
+.dive-variation-name{font-weight:700;font-size:0.88rem;margin-bottom:4px}
+.dive-variation-desc{font-size:0.78rem;color:var(--text2)}
+
+.dive-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;justify-content:center;
+}
+
+.dive-score{
+  display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;
+}
+.dive-score-item{
+  flex:1;min-width:80px;text-align:center;
+  padding:12px 8px;background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);border-radius:var(--r-md);
+}
+.dive-score-val{
+  font-size:1.5rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.dive-score-label{font-size:0.68rem;color:var(--text3);margin-top:2px}
+
+.breadcrumb{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  margin-bottom:16px;font-size:0.78rem;color:var(--text3);
+}
+.breadcrumb a{color:var(--accent2);cursor:pointer;text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:var(--text3)}
+
+/* ===== Human Idea Input ===== */
+#secHumanIdea .field{margin-bottom:14px}
+#secHumanIdea .field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:6px}
+#secHumanIdea .field input{
+  width:100%;padding:10px 12px;background:var(--bg3);
+  border:1px solid var(--border2);border-radius:var(--r-sm);
+  color:var(--text);font-size:0.88rem;font-family:var(--font);outline:none;
+}
+#secHumanIdea .field input:focus{border-color:var(--accent)}
 
 /* ===== Loading ===== */
 .loading{text-align:center;padding:40px 0}
@@ -438,6 +535,12 @@ body::before{
         <span>&#128161;</span>
         アイデアを発掘する
       </button>
+      <div style="margin-top:16px">
+        <button class="btn btn-secondary" id="btnHumanIdea">
+          <span>&#9997;</span>
+          自分のアイデアを入力する
+        </button>
+      </div>
     </div>
   </div>
 
@@ -449,6 +552,36 @@ body::before{
 
   <!-- Section: Ideas -->
   <div class="section" id="secIdeas"></div>
+
+  <!-- Section: Deep Dive -->
+  <div class="section" id="secDeepDive"></div>
+
+  <!-- Section: Human Idea Input -->
+  <div class="section" id="secHumanIdea">
+    <div class="card">
+      <div class="card-title"><span class="icon">&#9997;</span>自分のアイデアを入力</div>
+      <div class="field">
+        <label>アプリ名</label>
+        <input type="text" id="humanName" placeholder="例: タイムトラベル家計簿">
+      </div>
+      <div class="field">
+        <label>説明</label>
+        <input type="text" id="humanDesc" placeholder="例: 過去の支出をAIが分析して未来の出費を予測">
+      </div>
+      <div class="field">
+        <label>特徴（カンマ区切り）</label>
+        <input type="text" id="humanFeatures" placeholder="例: AI予測, データ可視化, 自動カテゴリ分け">
+      </div>
+      <div class="field">
+        <label>ターゲット</label>
+        <input type="text" id="humanAudience" placeholder="例: 20〜30代の社会人">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btnAddHuman" style="flex:1"><span>&#10133;</span> アイデアを追加</button>
+        <button class="btn btn-secondary" id="btnDiveHuman" style="flex:1"><span>&#128269;</span> そのまま深掘り</button>
+      </div>
+    </div>
+  </div>
 
   <!-- History -->
   <div class="history-section" id="historySection" hidden>
@@ -814,13 +947,16 @@ async function renderHits(hits){
   }
 }
 
+let currentIdeas = [];
+
 function renderIdeas(ideas){
+  currentIdeas = ideas;
   const sec = $('secIdeas');
-  sec.innerHTML = '<div class="card"><div class="card-title"><span class="icon">&#128161;</span>提案アイデア（'+ideas.length+'件）</div></div>';
+  sec.innerHTML = '<div class="card"><div class="card-title"><span class="icon">&#128161;</span>提案アイデア（'+ideas.length+'件）</div><div style="font-size:0.78rem;color:var(--text3);margin-top:-4px">クリックでアイデアを深掘り</div></div>';
 
   ideas.forEach((idea, i) => {
     const div = document.createElement('div');
-    div.className='combo-card';
+    div.className='combo-card clickable';
     div.style.animationDelay = (i*0.12)+'s';
 
     const trend = idea.trend || idea.trendData?.kw || '?';
@@ -840,15 +976,246 @@ function renderIdeas(ideas){
       </div>
       <div class="combo-audience">&#127919; ターゲット: ${esc(idea.audience||'')}</div>
       <div class="combo-potential">&#128200; ${esc(idea.potential||'')}</div>
+      <div class="combo-tap-hint">タップして深掘り &#8594;</div>
     `;
+    div.addEventListener('click', () => deepDive(idea));
     sec.appendChild(div);
   });
 
   // Restart button
   const restartDiv = document.createElement('div');
   restartDiv.style.cssText='text-align:center;margin-top:24px';
-  restartDiv.innerHTML='<button class="btn btn-primary" onclick="document.getElementById(\'secStart\').classList.add(\'active\');document.querySelectorAll(\'.section\').forEach(s=>s!==document.getElementById(\'secStart\')&&s.classList.remove(\'active\'));document.getElementById(\'stepLabel\').textContent=\'\';[\'s1\',\'s2\',\'s3\',\'s4\'].forEach(id=>document.getElementById(id).className=\'step-dot\');window.scrollTo({top:0,behavior:\'smooth\'})"><span>&#128260;</span> もう一度発掘する</button>';
+  restartDiv.innerHTML='<button class="btn btn-primary" id="btnRestart"><span>&#128260;</span> もう一度発掘する</button>';
   sec.appendChild(restartDiv);
+  sec.querySelector('#btnRestart').addEventListener('click', goHome);
+}
+
+function goHome(){
+  showSection('secStart');
+  $('stepLabel').textContent='';
+  ['s1','s2','s3','s4'].forEach(id=>$(id).className='step-dot');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   DEEP DIVE
+   ============================================================ */
+let diveHistory = [];
+
+function generateOfflineDive(idea){
+  const mvpFeatures = [
+    'ユーザー登録/ログイン機能','メインUI画面','プッシュ通知',
+    'データ保存（ローカル/クラウド）','シェア機能','設定画面',
+    'オンボーディング','アナリティクス計測','課金/サブスク基盤',
+    'オフライン対応','ダークモード','多言語対応',
+  ];
+  const competitors = [
+    {name:'既存大手アプリ',strength:'ブランド力とユーザー基盤',weakness:'革新性の欠如'},
+    {name:'新興スタートアップ',strength:'スピードと柔軟性',weakness:'資金とリソース不足'},
+    {name:'個人開発アプリ',strength:'ニッチ対応力',weakness:'スケーラビリティ'},
+  ];
+  const revenueModels = [
+    {model:'フリーミアム',desc:'基本無料＋プレミアム機能を月額制で提供'},
+    {model:'広告収入',desc:'ユーザーに無料提供し、広告で収益化'},
+    {model:'サブスクリプション',desc:'月額/年額で全機能アクセス'},
+    {model:'アプリ内課金',desc:'デジタルアイテムや追加コンテンツの販売'},
+  ];
+  const risks = [
+    {risk:'ユーザー獲得コスト',level:'中',mitigation:'SNSバイラルとASO最適化で有機成長を狙う'},
+    {risk:'競合の参入',level:'高',mitigation:'独自のUXとコミュニティで差別化'},
+    {risk:'技術的な複雑さ',level:'低',mitigation:'MVPは既存技術スタックで構築可能'},
+    {risk:'収益化の難しさ',level:'中',mitigation:'複数の収益モデルを段階的にテスト'},
+  ];
+  const variations = [
+    {name:idea.name+' Lite',desc:'コア機能のみに絞った軽量版。広告モデルで無料提供'},
+    {name:idea.name+' Pro',desc:'AIパーソナライズとプレミアム機能を搭載したプロ版'},
+    {name:idea.name+' Social',desc:'コミュニティ機能を中心にしたソーシャル特化版'},
+  ];
+
+  return {
+    mvp: pickN(mvpFeatures, 6),
+    competitors: pickN(competitors, 2),
+    revenue: pickN(revenueModels, 2),
+    risks: pickN(risks, 3),
+    variations,
+    scores: {
+      novelty: 5 + Math.floor(Math.random()*5),
+      feasibility: 4 + Math.floor(Math.random()*6),
+      market: 4 + Math.floor(Math.random()*6),
+      monetization: 3 + Math.floor(Math.random()*6),
+    }
+  };
+}
+
+async function deepDive(idea){
+  diveHistory.push({ideas: currentIdeas, label: $('stepLabel').textContent});
+  setStep(4, '深掘り分析中: '+idea.name);
+
+  const sec = $('secDeepDive');
+  sec.innerHTML = '<div class="loading"><div class="loader"></div><div class="loading-text">「'+esc(idea.name)+'」を深掘り分析中...</div></div>';
+  showSection('secDeepDive');
+
+  let dive;
+  if(AI.on){
+    try{ dive = await aiDeepDive(idea); }
+    catch(e){ console.error('AI dive failed:', e); dive = generateOfflineDive(idea); }
+  } else {
+    await sleep(800);
+    dive = generateOfflineDive(idea);
+  }
+
+  renderDeepDive(idea, dive);
+}
+
+async function aiDeepDive(idea){
+  const sys = `あなたはアプリ企画の専門家です。提示されたアプリアイデアを深掘り分析してください。
+必ず以下のJSON形式だけを返してください:
+{"mvp":["MVP機能1","MVP機能2",...],"competitors":[{"name":"競合名","strength":"強み","weakness":"弱み"}],"revenue":[{"model":"収益モデル名","desc":"説明"}],"risks":[{"risk":"リスク","level":"高/中/低","mitigation":"対策"}],"variations":[{"name":"バリエーション名","desc":"説明"}],"scores":{"novelty":8,"feasibility":7,"market":6,"monetization":7}}
+scoresは1-10で評価。`;
+
+  const usr = `【アプリ名】${idea.name}
+【説明】${idea.desc}
+【トレンド】${idea.trend||''}
+【参考ヒット】${idea.hit||''}
+【特徴】${(idea.features||[]).join(', ')}
+【ターゲット】${idea.audience||''}
+
+このアイデアを深掘りしてください。MVP機能6つ、競合2つ、収益モデル2つ、リスク3つ、バリエーション3つを提案してください。`;
+
+  const raw = await AI.call(sys, usr, {temp:0.8, max:2000});
+  const m = raw.match(/\{[\s\S]*\}/);
+  if(!m) throw new Error('JSON parse failed');
+  return JSON.parse(m[0]);
+}
+
+function renderDeepDive(idea, dive){
+  const sec = $('secDeepDive');
+  const trend = idea.trend || idea.trendData?.kw || '';
+  const hit = idea.hit || idea.hitData?.name || '';
+
+  sec.innerHTML = `
+    <div class="breadcrumb">
+      <a onclick="goBackFromDive()">&#128161; アイデア一覧</a>
+      <span class="sep">&#8250;</span>
+      <span>${esc(idea.name)}</span>
+    </div>
+    <button class="dive-back" onclick="goBackFromDive()">&#8592; アイデア一覧に戻る</button>
+
+    <div class="dive-header">
+      <div class="combo-formula" style="margin-bottom:10px">
+        ${trend ? '<span class="combo-tag trend">'+esc(trend)+'</span><span class="combo-plus">&times;</span>' : ''}
+        ${hit ? '<span class="combo-tag hit">'+esc(hit)+'</span><span class="combo-equals">=</span>' : ''}
+      </div>
+      <div class="dive-name">${esc(idea.name)}</div>
+      <div class="dive-desc">${esc(idea.desc)}</div>
+      ${idea.audience ? '<div style="margin-top:8px;font-size:0.82rem;color:var(--text3)">&#127919; '+esc(idea.audience)+'</div>' : ''}
+      <div class="dive-score">
+        <div class="dive-score-item"><div class="dive-score-val">${dive.scores.novelty}</div><div class="dive-score-label">新規性</div></div>
+        <div class="dive-score-item"><div class="dive-score-val">${dive.scores.feasibility}</div><div class="dive-score-label">実現性</div></div>
+        <div class="dive-score-item"><div class="dive-score-val">${dive.scores.market}</div><div class="dive-score-label">市場性</div></div>
+        <div class="dive-score-item"><div class="dive-score-val">${dive.scores.monetization}</div><div class="dive-score-label">収益性</div></div>
+      </div>
+    </div>
+
+    <div class="dive-grid two">
+      <div class="dive-card">
+        <div class="dive-card-title"><span class="ic">&#128736;</span>MVP機能</div>
+        <ul class="dive-list">${(dive.mvp||[]).map(f=>'<li>'+esc(f)+'</li>').join('')}</ul>
+      </div>
+      <div class="dive-card">
+        <div class="dive-card-title"><span class="ic">&#128176;</span>収益モデル</div>
+        <ul class="dive-list">${(dive.revenue||[]).map(r=>'<li><strong>'+esc(r.model)+'</strong><br>'+esc(r.desc)+'</li>').join('')}</ul>
+      </div>
+    </div>
+
+    <div class="dive-grid two">
+      <div class="dive-card">
+        <div class="dive-card-title"><span class="ic">&#9878;</span>競合分析</div>
+        <ul class="dive-list">${(dive.competitors||[]).map(c=>'<li><strong>'+esc(c.name)+'</strong><br>強み: '+esc(c.strength)+'<br>弱み: '+esc(c.weakness)+'</li>').join('')}</ul>
+      </div>
+      <div class="dive-card">
+        <div class="dive-card-title"><span class="ic">&#9888;</span>リスク分析</div>
+        <ul class="dive-list">${(dive.risks||[]).map(r=>'<li><strong>['+esc(r.level)+'] '+esc(r.risk)+'</strong><br>対策: '+esc(r.mitigation)+'</li>').join('')}</ul>
+      </div>
+    </div>
+
+    <div class="dive-card">
+      <div class="dive-card-title"><span class="ic">&#128300;</span>バリエーション（クリックで深掘り）</div>
+      <div id="diveVariations"></div>
+    </div>
+
+    <div class="dive-actions">
+      <button class="btn btn-secondary" onclick="goBackFromDive()">&#8592; 戻る</button>
+      <button class="btn btn-primary" onclick="goHome()"><span>&#128260;</span> 最初から</button>
+    </div>
+  `;
+
+  // Render clickable variations
+  const varContainer = sec.querySelector('#diveVariations');
+  (dive.variations||[]).forEach(v => {
+    const vDiv = document.createElement('div');
+    vDiv.className = 'dive-variation';
+    vDiv.innerHTML = '<div class="dive-variation-name">'+esc(v.name)+'</div><div class="dive-variation-desc">'+esc(v.desc)+'</div>';
+    vDiv.addEventListener('click', () => {
+      deepDive({name:v.name, desc:v.desc, trend:idea.trend, hit:idea.hit, features:[], audience:idea.audience||'', potential:''});
+    });
+    varContainer.appendChild(vDiv);
+  });
+}
+
+function goBackFromDive(){
+  if(diveHistory.length > 0){
+    const prev = diveHistory.pop();
+    setStep(4, prev.label || 'アイデア完成！');
+    renderIdeas(prev.ideas);
+    showSection('secIdeas');
+  } else {
+    goHome();
+  }
+}
+
+/* ============================================================
+   HUMAN IDEA
+   ============================================================ */
+function buildHumanIdea(){
+  const name = $('humanName').value.trim();
+  const desc = $('humanDesc').value.trim();
+  if(!name){ alert('アプリ名を入力してください'); return null; }
+  const features = $('humanFeatures').value.trim() ? $('humanFeatures').value.split(/[,、]/).map(s=>s.trim()).filter(Boolean) : [];
+  const audience = $('humanAudience').value.trim() || '';
+  return {
+    name, desc: desc||name,
+    trend:'人間のアイデア', hit:'オリジナル',
+    features, audience, potential:'ユーザー発のオリジナルアイデア',
+    isHuman: true
+  };
+}
+
+function addHumanIdea(){
+  const idea = buildHumanIdea();
+  if(!idea) return;
+  currentIdeas.push(idea);
+  setStep(4,'アイデア完成！');
+  renderIdeas(currentIdeas);
+  showSection('secIdeas');
+  clearHumanForm();
+}
+
+function diveHumanIdea(){
+  const idea = buildHumanIdea();
+  if(!idea) return;
+  currentIdeas = [idea];
+  diveHistory = [{ideas:[idea], label:'自分のアイデア'}];
+  setStep(4,'深掘り分析中: '+idea.name);
+  clearHumanForm();
+  deepDive(idea);
+}
+
+function clearHumanForm(){
+  $('humanName').value='';
+  $('humanDesc').value='';
+  $('humanFeatures').value='';
+  $('humanAudience').value='';
 }
 
 function esc(s){
@@ -883,6 +1250,14 @@ $('btnTestAI').addEventListener('click', async()=>{
   $('testResult').style.color = ok ? 'var(--green)' : 'var(--red)';
   if(ok) updateAIStatus();
 });
+
+// Human idea buttons
+$('btnHumanIdea').addEventListener('click', ()=>{
+  showSection('secHumanIdea');
+  setStep(1,'自分のアイデアを入力');
+});
+$('btnAddHuman').addEventListener('click', addHumanIdea);
+$('btnDiveHuman').addEventListener('click', diveHumanIdea);
 
 // Init
 updateAIStatus();
