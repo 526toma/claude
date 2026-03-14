@@ -758,7 +758,7 @@ const AI = {
 
 必ず以下のJSON配列だけを返してください（説明文は不要）:
 [{"name":"アプリ名","trend":"使ったトレンド","hit":"参考にしたヒットアプリ","desc":"50字以内の説明","features":["特徴1","特徴2","特徴3"],"audience":"ターゲット","potential":"なぜこれがいけると思うか（1文）","catchcopy":"心を掴むキャッチコピー（1文）","story":"想像してみて。で始まる40字程度のユーザーストーリー。このアプリを使う場面を具体的にイメージさせる","excitement":85}]
-excitementは50-100のワクワク度（高いほど良い）。catchcopyは広告のような一言。storyは読み手が「それ欲しい！」と思うシナリオ。`;
+excitementは50-100のワクワク度（高いほど良い）。catchcopyは広告のような一言。storyは「想像してみて」のような前置きなしで、このアプリを使う日常の一場面を自然な日本語で書いて。読んだ人が「あ、それいいな」って思えるような短いシナリオ。`;
 
     const usr = `【カテゴリ】${cats.join(', ')}
 
@@ -842,9 +842,12 @@ function generateOfflineIdeas(cats, trends, hits){
     ];
 
     const stories = [
-      `想像してみて。朝の通勤電車でスマホを開くと、${t.kw}を活用したあなただけの体験が待っている。${h.name}みたいにハマれて、しかも毎日の生活がちょっと良くなる。そんなアプリがあったら、使わない理由がない。`,
-      `友達が「最近なんか変わったね」って聞いてくる。きっかけはこのアプリ。${h.name}の面白さと${t.kw}の最新技術が合わさって、気づいたら毎日開いてた。`,
-      `${h.name}に初めて出会った時のワクワク、覚えてる？あの興奮を、${t.kw}のパワーでもう一段階アップさせたのがこれ。使い始めたら、もう戻れない。`,
+      `朝の通勤電車でふとスマホを開いたら、${t.kw}を使った自分だけの体験が始まる。${h.name}みたいにハマれて、しかも日常がちょっと良くなる。そういうアプリ。`,
+      `友達に「最近なんか変わったね」って言われて、理由を聞かれる。このアプリのおかげ。${h.name}の面白さと${t.kw}が合わさって、気づいたら毎日開いてた。`,
+      `${h.name}に初めて出会った時のワクワク、あれをもう一回。${t.kw}の力でさらにパワーアップしたやつ。一回使うと、もう手放せない。`,
+      `暇な時間にダラダラSNS見る代わりに、これを開く。${t.kw}と${h.name}のいいとこ取りで、気づいたら1時間経ってる。でも罪悪感ゼロ。`,
+      `「こういうの欲しかったんだよね」って思わず声に出るアプリ。${h.name}の良さをそのままに、${t.kw}で今っぽくアップデートした感じ。`,
+      `帰り道、イヤホンしながらこのアプリを開く時間が、一日で一番好きな時間になる。${h.name}っぽいのに、${t.kw}のおかげで全然新しい体験。`,
     ];
 
     ideas.push({
@@ -1063,7 +1066,7 @@ function renderIdeas(ideas){
       <div class="combo-result">${esc(idea.name)}</div>
       ${idea.catchcopy ? '<div class="combo-catchcopy">'+esc(idea.catchcopy)+'</div>' : ''}
       <div class="combo-desc">${esc(idea.desc)}</div>
-      ${idea.story ? '<div class="combo-story"><div class="story-label">&#127912; Imagine...</div>'+esc(idea.story)+'</div>' : ''}
+      ${idea.story ? '<div class="combo-story"><div class="story-label">&#127912; こんなシーン</div>'+esc(idea.story)+'</div>' : ''}
       <div class="combo-excitement">
         <span class="combo-excitement-label">ワクワク度</span>
         <div class="combo-excitement-bar"><div class="combo-excitement-fill" style="width:0%" data-target="${excitement}"></div></div>
@@ -1423,7 +1426,7 @@ async function diveHumanIdea(){
     $('secDeepDive').innerHTML = '<div class="loading"><div class="loader"></div><div class="loading-text">あなたのアイデアをAIが分析中...</div></div>';
     try {
       const sys = `ユーザーのアイデアのメモから、アプリの企画情報を生成してください。必ず以下のJSONだけ返してください:
-{"name":"キャッチーなアプリ名","desc":"30字以内の説明","features":["特徴1","特徴2","特徴3"],"audience":"ターゲット","catchcopy":"心を掴むキャッチコピー（1文）","story":"想像してみて。で始まる具体的なシナリオ（2-3文）","excitement":85}`;
+{"name":"キャッチーなアプリ名","desc":"30字以内の説明","features":["特徴1","特徴2","特徴3"],"audience":"ターゲット","catchcopy":"心を掴むキャッチコピー（1文）","story":"このアプリを使う日常の一場面を自然な日本語で。前置きなしで始めて2-3文","excitement":85}`;
       const raw = await AI.call(sys, text, {temp:0.9, max:500});
       const m = raw.match(/\{[\s\S]*\}/);
       if(m){
