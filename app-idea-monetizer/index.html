@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea Monetizer - アイデアを自動でプロダクトに</title>
+  <meta name="description" content="アイデア生成から開発・宣伝・マネタイズまでワンクリックで自動化するダッシュボード">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+</head>
+<body>
+  <!-- ===== ヘッダー ===== -->
+  <header class="header">
+    <div class="header__logo">
+      <span class="header__icon">&#9889;</span>
+      <h1 class="header__title">Idea Monetizer</h1>
+    </div>
+    <p class="header__tagline">ボタン1つでアイデアをプロダクトに変える</p>
+  </header>
+
+  <!-- ===== パイプラインステッパー ===== -->
+  <nav class="pipeline" aria-label="パイプライン進捗">
+    <ol class="pipeline__steps">
+      <li class="pipeline__step" data-step="1">
+        <span class="pipeline__number">1</span>
+        <span class="pipeline__label">アイデア生成</span>
+      </li>
+      <li class="pipeline__step" data-step="2">
+        <span class="pipeline__number">2</span>
+        <span class="pipeline__label">評価・選定</span>
+      </li>
+      <li class="pipeline__step" data-step="3">
+        <span class="pipeline__number">3</span>
+        <span class="pipeline__label">自動開発</span>
+      </li>
+      <li class="pipeline__step" data-step="4">
+        <span class="pipeline__number">4</span>
+        <span class="pipeline__label">プレビュー</span>
+      </li>
+      <li class="pipeline__step" data-step="5">
+        <span class="pipeline__number">5</span>
+        <span class="pipeline__label">宣伝キット</span>
+      </li>
+      <li class="pipeline__step" data-step="6">
+        <span class="pipeline__number">6</span>
+        <span class="pipeline__label">マネタイズ</span>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- ===== メインコンテンツ ===== -->
+  <main class="main">
+
+    <!-- 初期画面: スタートボタン -->
+    <section id="section-start" class="section section--start active">
+      <div class="start-card">
+        <h2 class="start-card__title">自動パイプラインを開始</h2>
+        <p class="start-card__desc">
+          アイデアの生成、評価、コード生成、宣伝文作成、マネタイズ設計を<br>
+          すべて自動で実行します。
+        </p>
+        <div class="start-card__options">
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="game" checked> ゲーム
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="tool" checked> ツール
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="sns"> SNS
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="lifestyle"> ライフスタイル
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="education"> 教育
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="entertainment" checked> エンタメ
+          </label>
+          <label class="category-chip">
+            <input type="checkbox" name="category" value="business"> ビジネス
+          </label>
+        </div>
+        <button id="btn-start" class="btn btn--primary btn--large">
+          <span class="btn__icon">&#9654;</span>
+          パイプライン開始
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 1: アイデア生成 -->
+    <section id="section-ideas" class="section section--ideas">
+      <h2 class="section__title">生成されたアイデア</h2>
+      <div id="ideas-grid" class="ideas-grid">
+        <!-- JS で動的に生成 -->
+      </div>
+    </section>
+
+    <!-- Step 2: 評価結果 -->
+    <section id="section-evaluation" class="section section--evaluation">
+      <h2 class="section__title">評価結果 &amp; ランキング</h2>
+      <div id="evaluation-list" class="evaluation-list">
+        <!-- JS で動的に生成 -->
+      </div>
+      <div class="section__winner" id="winner-announce"></div>
+    </section>
+
+    <!-- Step 3: 自動開発 -->
+    <section id="section-build" class="section section--build">
+      <h2 class="section__title">自動開発</h2>
+      <div class="build-progress">
+        <div class="build-progress__bar">
+          <div class="build-progress__fill" id="build-fill"></div>
+        </div>
+        <p class="build-progress__status" id="build-status">コードを生成中...</p>
+      </div>
+      <div class="code-viewer" id="code-viewer">
+        <div class="code-viewer__header">
+          <span class="code-viewer__dot code-viewer__dot--red"></span>
+          <span class="code-viewer__dot code-viewer__dot--yellow"></span>
+          <span class="code-viewer__dot code-viewer__dot--green"></span>
+          <span class="code-viewer__filename" id="code-filename">index.html</span>
+        </div>
+        <pre class="code-viewer__code"><code id="code-output"></code></pre>
+      </div>
+    </section>
+
+    <!-- Step 4: プレビュー -->
+    <section id="section-preview" class="section section--preview">
+      <h2 class="section__title">プレビュー</h2>
+      <div class="preview-container">
+        <div class="preview-frame">
+          <div class="preview-frame__toolbar">
+            <span class="preview-frame__dot preview-frame__dot--red"></span>
+            <span class="preview-frame__dot preview-frame__dot--yellow"></span>
+            <span class="preview-frame__dot preview-frame__dot--green"></span>
+            <span class="preview-frame__url" id="preview-url">https://your-app.example.com</span>
+          </div>
+          <iframe id="preview-iframe" class="preview-frame__iframe" sandbox="allow-scripts allow-same-origin" title="アプリプレビュー"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5: 宣伝キット -->
+    <section id="section-marketing" class="section section--marketing">
+      <h2 class="section__title">宣伝キット</h2>
+      <div class="marketing-grid" id="marketing-grid">
+        <!-- JS で動的に生成 -->
+      </div>
+    </section>
+
+    <!-- Step 6: マネタイズ -->
+    <section id="section-monetize" class="section section--monetize">
+      <h2 class="section__title">マネタイズプラン</h2>
+      <div id="monetize-content" class="monetize-content">
+        <!-- JS で動的に生成 -->
+      </div>
+    </section>
+
+    <!-- 最終: ダウンロード -->
+    <section id="section-download" class="section section--download">
+      <div class="download-card">
+        <h2 class="download-card__title">すべて完了!</h2>
+        <p class="download-card__desc">アプリコード・宣伝素材・マネタイズプランをまとめてダウンロードできます。</p>
+        <div class="download-card__actions">
+          <button id="btn-download" class="btn btn--primary btn--large">
+            <span class="btn__icon">&#11015;</span>
+            ZIPダウンロード
+          </button>
+          <button id="btn-restart" class="btn btn--secondary btn--large">
+            <span class="btn__icon">&#8635;</span>
+            もう一度生成
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== フッター ===== -->
+  <footer class="footer">
+    <p>&copy; 2026 Idea Monetizer. Built with creativity.</p>
+  </footer>
+
+  <script src="js/idea-generator.js"></script>
+  <script src="js/evaluator.js"></script>
+  <script src="js/builder.js"></script>
+  <script src="js/marketing.js"></script>
+  <script src="js/monetization.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
