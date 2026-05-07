@@ -1,0 +1,25 @@
+{
+  "name": "秘書ちゃんサイクルコンピューター",
+  "short_name": "秘書ちゃんCC",
+  "description": "秘書ちゃんと一緒に走るサイクリング体験アプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "images/hisho/normal.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "images/hisho/normal.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

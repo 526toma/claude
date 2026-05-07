@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="秘書ちゃんCC">
+  <meta name="theme-color" content="#1a1a2e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="images/hisho/normal.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <title>秘書ちゃんサイクルコンピューター</title>
+</head>
+<body>
+  <!-- 背景レイヤー：秘書ちゃん立ち絵 -->
+  <div id="hisho-bg" class="hisho-bg" data-mood="normal"
+       style="background-image:url('images/hisho/normal.svg');"></div>
+
+  <!-- ===================================================================
+       画面1: 起動 / スタート前チャット
+       =================================================================== -->
+  <section id="screen-chat" class="screen screen--active">
+    <header class="topbar">
+      <div class="topbar__title">秘書ちゃん</div>
+      <button class="icon-btn" id="btn-settings" aria-label="設定">⚙︎</button>
+    </header>
+
+    <div id="chat-log" class="chat-log" aria-live="polite"></div>
+
+    <div id="chat-quick" class="chat-quick"></div>
+
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" inputmode="text"
+             placeholder="メッセージを入力…" autocomplete="off">
+      <button id="chat-send" class="primary-btn">送信</button>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       画面2: 走行画面
+       =================================================================== -->
+  <section id="screen-ride" class="screen">
+    <header class="topbar topbar--ride">
+      <div class="topbar__title" id="ride-status">走行中</div>
+      <button class="icon-btn" id="btn-ride-settings" aria-label="設定">⚙︎</button>
+    </header>
+
+    <!-- 吹き出し：下から1/3エリア -->
+    <div id="bubble" class="bubble bubble--hidden">
+      <div class="bubble__text" id="bubble-text">準備OKですか？</div>
+    </div>
+
+    <!-- 数字パネル：下部固定 -->
+    <div class="metrics">
+      <div class="metric metric--big">
+        <div class="metric__value" id="m-distance">0.00</div>
+        <div class="metric__unit">km</div>
+      </div>
+      <div class="metric">
+        <div class="metric__value" id="m-time">0:00:00</div>
+        <div class="metric__unit">経過</div>
+      </div>
+      <div class="metric">
+        <div class="metric__value" id="m-speed">0.0</div>
+        <div class="metric__unit">km/h</div>
+      </div>
+    </div>
+
+    <!-- 走行コントロール -->
+    <div class="ride-controls">
+      <button id="btn-pause" class="round-btn round-btn--ghost">一時停止</button>
+      <button id="btn-finish" class="round-btn round-btn--danger">ゴール</button>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       画面3: 振り返り
+       =================================================================== -->
+  <section id="screen-summary" class="screen">
+    <header class="topbar">
+      <div class="topbar__title">お疲れさまでした</div>
+    </header>
+
+    <div class="summary-card">
+      <div id="summary-greeting" class="summary-greeting">
+        お疲れさまでした！しっかり走れましたね。
+      </div>
+      <dl class="summary-list">
+        <div class="summary-row"><dt>距離</dt><dd id="s-distance">0.00 km</dd></div>
+        <div class="summary-row"><dt>時間</dt><dd id="s-time">0:00:00</dd></div>
+        <div class="summary-row"><dt>平均速度</dt><dd id="s-avg">0.0 km/h</dd></div>
+        <div class="summary-row"><dt>最高速度</dt><dd id="s-max">0.0 km/h</dd></div>
+        <div class="summary-row"><dt>獲得標高</dt><dd id="s-elev">0 m</dd></div>
+      </dl>
+      <div class="summary-actions">
+        <button id="btn-save" class="primary-btn">保存</button>
+        <button id="btn-back-home" class="ghost-btn">ホームへ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       設定モーダル
+       =================================================================== -->
+  <div id="settings-modal" class="modal modal--hidden">
+    <div class="modal__panel">
+      <h2>設定</h2>
+      <label class="row">
+        <span>音声読み上げ</span>
+        <input id="cfg-voice" type="checkbox" checked>
+      </label>
+      <label class="row">
+        <span>声かけ頻度（秒）</span>
+        <input id="cfg-interval" type="number" min="10" max="300" value="30">
+      </label>
+      <label class="row">
+        <span>デバッグGPS（屋内テスト用）</span>
+        <input id="cfg-debug-gps" type="checkbox">
+      </label>
+      <label class="row">
+        <span>ユーザー名</span>
+        <input id="cfg-name" type="text" placeholder="晃二郎さん">
+      </label>
+      <div class="modal__actions">
+        <button id="btn-settings-close" class="primary-btn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- スクリプト：モジュール構成 -->
+  <script src="js/storage.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/ride.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

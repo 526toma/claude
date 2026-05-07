@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff2cc"/>
+      <stop offset="100%" stop-color="#ffd966"/>
+    </linearGradient>
+    <radialGradient id="spot" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <rect width="1080" height="1920" fill="url(#spot)"/>
+  <!-- 仮の人型シルエット -->
+  <g opacity="0.85">
+    <!-- 髪 -->
+    <ellipse cx="540" cy="640" rx="240" ry="280" fill="#3a2a1a"/>
+    <!-- 顔 -->
+    <ellipse cx="540" cy="700" rx="200" ry="240" fill="#fce4d0"/>
+    <!-- 体 -->
+    <path d="M 280 1200 Q 540 1000 800 1200 L 850 1920 L 230 1920 Z" fill="#5d6d8a"/>
+    <!-- スカーフ -->
+    <ellipse cx="540" cy="1020" rx="180" ry="40" fill="#c44569"/>
+  </g>
+  <!-- 表情ラベル -->
+  <g>
+    <rect x="340" y="660" width="400" height="120" rx="60" fill="rgba(255,255,255,0.95)" stroke="#333" stroke-width="4"/>
+    <text x="540" y="720" font-family="sans-serif" font-size="56" fill="#333" text-anchor="middle" font-weight="bold">Σ(°□°)</text>
+    <text x="540" y="760" font-family="sans-serif" font-size="28" fill="#666" text-anchor="middle">驚き</text>
+  </g>
+  <!-- 「秘書ちゃん」表記 -->
+  <g>
+    <rect x="40" y="40" width="320" height="80" rx="40" fill="rgba(0,0,0,0.5)"/>
+    <text x="200" y="92" font-family="sans-serif" font-size="36" fill="#fff" text-anchor="middle" font-weight="bold">秘書ちゃん</text>
+  </g>
+</svg>
