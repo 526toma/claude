@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#06c755" />
+  <title>Messenger</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════ ログイン / 新規登録 ══════════════ -->
+<section id="screen-auth" class="screen active">
+  <div class="auth-box">
+    <div class="auth-logo">💬</div>
+    <h1 class="auth-title">Messenger</h1>
+    <p class="auth-sub">シンプルなチャット</p>
+
+    <div class="seg">
+      <button type="button" class="seg-btn active" data-mode="login">ログイン</button>
+      <button type="button" class="seg-btn" data-mode="register">新規登録</button>
+    </div>
+
+    <form id="form-login" class="auth-form">
+      <input type="email" id="login-email" placeholder="メールアドレス" autocomplete="email" />
+      <input type="password" id="login-password" placeholder="パスワード" autocomplete="current-password" />
+      <button type="submit" class="btn-primary">ログイン</button>
+    </form>
+
+    <form id="form-register" class="auth-form hidden">
+      <input type="text" id="reg-name" placeholder="名前" maxlength="20" autocomplete="nickname" />
+      <input type="email" id="reg-email" placeholder="メールアドレス" autocomplete="email" />
+      <input type="password" id="reg-password" placeholder="パスワード（6文字以上）" autocomplete="new-password" />
+      <button type="submit" class="btn-primary">登録する</button>
+    </form>
+
+    <p id="auth-error" class="auth-error"></p>
+  </div>
+</section>
+
+<!-- ══════════════ メイン（友だち / トーク / 設定） ══════════════ -->
+<section id="screen-main" class="screen">
+  <header class="header">
+    <h2 id="main-title">トーク</h2>
+  </header>
+
+  <div class="body">
+    <!-- 友だち -->
+    <div id="view-friends" class="view hidden">
+      <div class="search-wrap">
+        <input type="search" id="friend-search" placeholder="名前・メールで検索" />
+      </div>
+      <div id="friend-list" class="list"></div>
+    </div>
+
+    <!-- トーク -->
+    <div id="view-chats" class="view">
+      <div id="chat-list" class="list"></div>
+      <div id="chat-empty" class="empty hidden">
+        <p>まだトークがありません</p>
+        <p class="empty-sub">「友だち」タブから相手を選んでね</p>
+      </div>
+    </div>
+
+    <!-- 設定 -->
+    <div id="view-me" class="view hidden">
+      <div class="me-card">
+        <div class="avatar avatar-lg" id="me-avatar"></div>
+        <div class="me-name" id="me-name"></div>
+        <div class="me-email" id="me-email"></div>
+      </div>
+      <div class="me-row">
+        <label for="edit-name">表示名</label>
+        <div class="me-edit">
+          <input type="text" id="edit-name" maxlength="20" />
+          <button type="button" id="btn-save-name" class="btn-mini">保存</button>
+        </div>
+      </div>
+      <button type="button" id="btn-logout" class="btn-danger">ログアウト</button>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <button type="button" class="tab" data-tab="friends">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M16 19v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="9" cy="7.5" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M17 4.2a3.5 3.5 0 0 1 0 6.6M22 19v-1.5a4 4 0 0 0-3-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span>友だち</span>
+    </button>
+    <button type="button" class="tab active" data-tab="chats">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 14.5a2.5 2.5 0 0 1-2.5 2.5H8l-5 4V5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      <span>トーク</span>
+      <i id="tab-badge" class="tab-badge hidden"></i>
+    </button>
+    <button type="button" class="tab" data-tab="me">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20v-.5A5.5 5.5 0 0 1 9.5 14h5a5.5 5.5 0 0 1 5.5 5.5V20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span>設定</span>
+    </button>
+  </nav>
+</section>
+
+<!-- ══════════════ トークルーム ══════════════ -->
+<section id="screen-room" class="screen">
+  <header class="header room-header">
+    <button type="button" id="btn-back" class="icon-btn" aria-label="戻る">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="avatar avatar-sm" id="room-avatar"></div>
+    <h2 id="room-title"></h2>
+  </header>
+
+  <div id="messages" class="messages"></div>
+
+  <form id="form-send" class="composer">
+    <textarea id="input-msg" rows="1" placeholder="メッセージ" enterkeyhint="send"></textarea>
+    <button type="submit" id="btn-send" class="send-btn" aria-label="送信" disabled>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </form>
+</section>
+
+<div id="toast" class="toast hidden"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
