@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""入居者向け「管理会社変更・家賃振込先変更のお知らせ」— 和文ビジネスレター体裁"""
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -10,247 +11,177 @@ from reportlab.pdfbase.pdfmetrics import registerFontFamily
 from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame, Paragraph,
                                 Spacer, Table, TableStyle, KeepTogether)
 
-F = "IPAGothic"
-pdfmetrics.registerFont(TTFont(F, "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf"))
-pdfmetrics.registerFont(TTFont("IPAPGothic", "/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf"))
-registerFontFamily(F, normal=F, bold=F, italic=F, boldItalic=F)
-FP = "IPAPGothic"
-registerFontFamily(FP, normal=FP, bold=FP, italic=FP, boldItalic=FP)
+M  = "IPAPMincho"   # 本文（プロポーショナル明朝）
+MF = "IPAMincho"    # 等幅明朝
+pdfmetrics.registerFont(TTFont(MF, "/usr/share/fonts/opentype/ipafont-mincho/ipam.ttf"))
+pdfmetrics.registerFont(TTFont(M,  "/usr/share/fonts/opentype/ipafont-mincho/ipamp.ttf"))
+for f in (M, MF):
+    registerFontFamily(f, normal=f, bold=f, italic=f, boldItalic=f)
 
-NAVY   = colors.HexColor("#1F3864")
-ACCENT = colors.HexColor("#C00000")
-LIGHT  = colors.HexColor("#EAF0F8")
-GREY   = colors.HexColor("#666666")
-LINE   = colors.HexColor("#B8C4D9")
+BLACK = colors.black
+RULE  = colors.HexColor("#333333")
+
+W, H   = A4
+LR     = 25 * mm
+TOP    = 22 * mm
+BOT    = 20 * mm
+CW     = W - 2 * LR
 
 def S(name, **kw):
-    kw.setdefault("fontName", FP)
+    kw.setdefault("fontName", M)
     kw.setdefault("wordWrap", "CJK")
-    kw.setdefault("leading", kw.get("fontSize", 10) * 1.75)
+    kw.setdefault("fontSize", 10.5)
+    kw.setdefault("leading", kw["fontSize"] * 1.75)
+    kw.setdefault("textColor", BLACK)
     return ParagraphStyle(name, **kw)
 
-st_date   = S("date", fontSize=9.5, alignment=TA_RIGHT, textColor=GREY)
-st_from   = S("from", fontSize=9.5, alignment=TA_RIGHT, leading=15)
-st_fromhd = S("fromhd", fontSize=12, alignment=TA_RIGHT, leading=18, textColor=NAVY)
-st_to     = S("to", fontSize=12, alignment=TA_LEFT)
-st_title  = S("title", fontSize=17, alignment=TA_CENTER, textColor=colors.white, leading=25)
-st_sub    = S("sub", fontSize=10.5, alignment=TA_CENTER, textColor=colors.white, leading=16)
-st_body   = S("body", fontSize=10.5, leading=18)
-st_lead   = S("lead", fontSize=11, leading=20)
-st_kihd   = S("kihd", fontSize=12, textColor=colors.white, leading=17)
-st_cell   = S("cell", fontSize=10.5, leading=16)
-st_cellb  = S("cellb", fontSize=13, leading=18, textColor=NAVY)
-st_lbl    = S("lbl", fontSize=10, leading=15, textColor=colors.white)
-st_note   = S("note", fontSize=10, leading=16)
-st_small  = S("small", fontSize=9, leading=13, textColor=GREY)
-st_box1   = S("box1", fontSize=13.5, leading=21, textColor=NAVY)
-st_box2   = S("box2", fontSize=10, leading=16, textColor=colors.HexColor("#333333"))
-st_end    = S("end", fontSize=10.5, alignment=TA_RIGHT)
+st_date  = S("date",  alignment=TA_RIGHT)
+st_to    = S("to",    fontSize=11)
+st_from  = S("from",  alignment=TA_RIGHT, leading=17)
+st_title = S("title", fontSize=14, alignment=TA_CENTER, leading=24)
+st_body  = S("body",  leading=19, firstLineIndent=10.5)   # 段落一字下げ
+st_plain = S("plain", leading=19)
+st_right = S("right", alignment=TA_RIGHT)
+st_ki    = S("ki",    fontSize=11, alignment=TA_CENTER, leading=20)
+st_item  = S("item",  leading=18, leftIndent=21, firstLineIndent=-21)  # 「1．」ぶら下げ
+st_sub   = S("sub",   fontSize=10, leading=17, leftIndent=21)
+st_sub2  = S("sub2",  fontSize=10, leading=17, leftIndent=42, firstLineIndent=-21)
+st_cell  = S("cell",  leading=16)
+st_note  = S("note",  fontSize=9.5, leading=15.5, leftIndent=21)
 
-W, H = A4
-MARGIN = 18 * mm
-CW = W - 2 * MARGIN
-
-def bar(text, sub=None, color=NAVY):
-    """Full-width colored heading bar."""
-    rows = [[Paragraph(text, st_title)]]
-    if sub:
-        rows.append([Paragraph(sub, st_sub)])
-    t = Table(rows, colWidths=[CW])
-    t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), color),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("TOPPADDING", (0, 0), (-1, 0), 7),
-        ("BOTTOMPADDING", (0, -1), (-1, -1), 7),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-    ]))
-    return t
-
-def section(num, text):
-    t = Table([[Paragraph("%s" % num, S("n", fontSize=11, textColor=colors.white, alignment=TA_CENTER)),
-                Paragraph(text, S("s", fontSize=12, textColor=NAVY, leading=17))]],
-              colWidths=[9 * mm, CW - 9 * mm])
-    t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (0, 0), NAVY),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-        ("LEFTPADDING", (1, 0), (1, 0), 7),
-        ("LINEBELOW", (1, 0), (1, 0), 1, LINE),
-    ]))
-    return t
+SP = "&nbsp;&nbsp;"   # 全角一字分の空き
 
 def BL(n):
+    """記入用の下線（全角アンダーライン）"""
     return "＿" * n
 
 story = []
 A = story.append
 
-# ---------- header ----------
+# ── 日付・宛名・差出人 ─────────────────────────────
 A(Paragraph("令和8年　" + BL(2) + " 月 " + BL(2) + " 日", st_date))
-A(Spacer(1, 5))
+A(Spacer(1, 14))
 A(Paragraph("入居者各位", st_to))
-A(Spacer(1, 2))
-A(Paragraph("物件名：" + BL(16), S("p", fontSize=10.5, textColor=colors.HexColor("#333333"), leading=17)))
-A(Spacer(1, 6))
-A(Paragraph("有限会社　大成住宅", st_fromhd))
+A(Spacer(1, 12))
 A(Paragraph(
-    "〒" + BL(3) + "－" + BL(4) + "　" + BL(14) + "<br/>"
-    "TEL：" + BL(4) + "－" + BL(3) + "－" + BL(4) + "　／　FAX：" + BL(4) + "－" + BL(3) + "－" + BL(4) + "<br/>"
-    "担当：" + BL(7), st_from))
-A(Spacer(1, 8))
+    "〒" + BL(3) + "－" + BL(4) + "　" + BL(13) + "<br/>"
+    "有限会社　大成住宅<br/>"
+    "電話" + SP + BL(4) + "－" + BL(3) + "－" + BL(4) + "<br/>"
+    "担当" + SP + BL(6), st_from))
+A(Spacer(1, 20))
 
-# ---------- title ----------
-A(bar("管理会社の変更と 家賃お振込先変更のお知らせ",
-      "12月1日より 建物の管理業務は 有限会社大成住宅 が承ります"))
-A(Spacer(1, 10))
+# ── 件名 ────────────────────────────────────────
+A(Paragraph("建物管理業務の変更および家賃お振込先変更のお知らせ", st_title))
+A(Spacer(1, 16))
 
-# ---------- greeting ----------
+# ── 本文 ────────────────────────────────────────
 A(Paragraph(
-    "拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。", st_body))
-A(Spacer(1, 5))
+    "拝啓" + SP + "時下ますますご清栄のこととお慶び申し上げます。"
+    "平素は格別のご高配を賜り、厚く御礼申し上げます。", st_body))
 A(Paragraph(
-    "この度、貸主様のご意向により、<b>令和8年12月1日</b>をもちまして、本物件の管理業務を弊社が引き継ぐこととなりました。"
-    "これに伴い、<b>お家賃のお振込先が変更</b>となります。お手数をおかけいたしますが、下記をご確認のうえ、"
-    "お振込先の変更をお願い申し上げます。", st_body))
-A(Spacer(1, 5))
+    "さて、この度、貸主様のご意向により、令和8年12月1日をもちまして、"
+    "下記物件の建物管理業務を弊社が承ることとなりました。"
+    "これに伴いまして、令和8年12月分のお家賃より、お振込先が下記のとおり変更となります。"
+    "お手数をおかけいたしますが、お振込先の変更手続きにつきまして、何卒よろしくお願い申し上げます。", st_body))
 A(Paragraph(
-    "なお、<b>賃貸借契約の内容（お家賃の額・契約期間・お支払期日などの条件）に変更はございません。</b>"
+    "なお、賃貸借契約の内容（お家賃の額・契約期間・お支払期日等の条件）に変更はございません。"
     "今後とも安心してお住まいいただけますよう努めてまいります。", st_body))
+A(Paragraph(
+    "まずは略儀ながら、書面をもちましてご挨拶かたがたご案内申し上げます。", st_body))
 A(Spacer(1, 6))
-A(Paragraph("敬具", st_end))
-A(Spacer(1, 4))
+A(Paragraph("敬具", st_right))
+A(Spacer(1, 14))
 
-# ---------- at-a-glance box ----------
-box = Table([[Paragraph("こ<br/>こ<br/>が<br/>変<br/>わ<br/>り<br/>ま<br/>す",
-                        S("v", fontSize=10, alignment=TA_CENTER, textColor=colors.white, leading=13)),
-              Paragraph(
-                  "① 管理会社が変わります<br/>"
-                  '<font size="10" color="#333333">令和8年12月1日から　→　有限会社　大成住宅<br/>'
-                  'これまでの管理会社： ' + BL(12) + '</font><br/><font size="5"><br/></font>'
-                  "② 家賃のお振込先が変わります<br/>"
-                  '<font size="10" color="#333333">令和8年12月分のお家賃から　→　新しい口座へ（下記1をご覧ください）</font>',
-                  st_box1)]],
-            colWidths=[13 * mm, CW - 13 * mm])
-box.setStyle(TableStyle([
-    ("BACKGROUND", (0, 0), (0, 0), ACCENT),
-    ("BACKGROUND", (1, 0), (1, 0), LIGHT),
-    ("BOX", (0, 0), (-1, -1), 1.2, ACCENT),
-    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ("TOPPADDING", (0, 0), (-1, -1), 6),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-    ("LEFTPADDING", (1, 0), (1, 0), 12),
-]))
-A(box)
+# ── 記 ─────────────────────────────────────────
+A(Paragraph("記", st_ki))
+A(Spacer(1, 12))
+
+A(Paragraph("1．" + SP + "物件名" + SP * 2 + BL(15), st_item))
 A(Spacer(1, 8))
 
-A(Paragraph("記", S("ki", fontSize=12, alignment=TA_CENTER, textColor=NAVY)))
-A(Spacer(1, 6))
-
-# ---------- 2. new bank account ----------
-_sec2 = [section("1", "新しいお振込先（令和8年12月分のお家賃から）"), Spacer(1, 5)]
-t2 = Table([
-    [Paragraph("金融機関名", st_lbl), Paragraph(BL(7) + " 銀行 　 " + BL(5) + " 支店", st_cellb)],
-    [Paragraph("預金種別", st_lbl), Paragraph("普通預金", st_cellb)],
-    [Paragraph("口座番号", st_lbl), Paragraph(BL(9), st_cellb)],
-    [Paragraph("口座名義", st_lbl), Paragraph("有限会社　大成住宅", st_cellb)],
-    [Paragraph("口座名義（カナ）", st_lbl), Paragraph("ユウゲンガイシャ　タイセイジユウタク", st_cellb)],
-], colWidths=[38 * mm, CW - 38 * mm])
-t2.setStyle(TableStyle([
-    ("BACKGROUND", (0, 0), (0, -1), NAVY),
-    ("BACKGROUND", (1, 0), (1, -1), colors.HexColor("#FFF9E6")),
-    ("GRID", (0, 0), (-1, -1), 0.6, LINE),
-    ("BOX", (0, 0), (-1, -1), 1.2, ACCENT),
-    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ("TOPPADDING", (0, 0), (-1, -1), 4.5),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 4.5),
-    ("LEFTPADDING", (0, 0), (-1, -1), 8),
-]))
-_sec2 += [t2, Spacer(1, 6), Paragraph(
-    "※ お振込みの際は、通信欄・依頼人名に <b>「お部屋番号＋ご契約者名」</b> をご入力ください。"
-    "（例：<b>101ヤマダタロウ</b>）<br/>"
-    "※ お支払期日は従来どおり <b>毎月 " + BL(2) + " 日まで（翌月分前払い）</b> です。<br/>"
-    "※ お振込手数料は、恐れ入りますが入居者様のご負担でお願いいたします。", st_small)]
-A(KeepTogether(_sec2))
-A(Spacer(1, 14))
-
-# ---------- 3. important notes ----------
-A(section("2", "大切なお願い・ご注意"))
-A(Spacer(1, 5))
-
-notes = [
-    ("旧口座は使えなくなります",
-     "これまでの口座（" + BL(10) + "）は <b>令和8年11月30日</b> をもってご利用いただけません。"
-     "誤ってお振込みされますと、返金のお手続きにお時間をいただくことになります。"),
-    ("自動振込をご利用の方",
-     "銀行の自動振込（定期振込）をご登録の方は、<b>お客様ご自身での変更手続きが必要</b>です。"
-     "11月中にお手続きくださいますようお願いいたします。"),
-    ("口座振替をご利用の方",
-     "新しい口座振替依頼書を別途お送りいたします。ご記入・ご捺印のうえご返送ください。"
-     "切替が完了するまでの間は、上記1の口座へお振込みをお願いいたします。"),
-    ("敷金・保証金について",
-     "お預かりしている敷金・保証金は弊社が引き継ぎます。ご退去時の精算も弊社にて対応いたしますので、ご安心ください。"),
-    ("設備の不具合・ご相談",
-     "12月1日以降、水漏れ・設備の故障などのご連絡、その他お住まいに関するご相談は、すべて弊社までお願いいたします。"),
-]
-rows = []
-for i, (h, b) in enumerate(notes, 1):
-    rows.append([Paragraph("●", S("b", fontSize=9, textColor=ACCENT, alignment=TA_CENTER)),
-                 Paragraph('<font color="#1F3864" size="11">%s</font><br/>%s' % (h, b), st_note)])
-t3 = Table(rows, colWidths=[7 * mm, CW - 7 * mm])
-t3.setStyle(TableStyle([
-    ("VALIGN", (0, 0), (-1, -1), "TOP"),
-    ("TOPPADDING", (0, 0), (-1, -1), 4),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-    ("LEFTPADDING", (1, 0), (1, -1), 3),
-    ("LINEBELOW", (0, 0), (-1, -2), 0.5, colors.HexColor("#DDDDDD")),
-]))
-A(t3)
-A(Spacer(1, 14))
-
-# ---------- 4. contact ----------
-_sec3 = [section("3", "お問い合わせ先"), Spacer(1, 5)]
-c = Table([[Paragraph(
-    '<font size="13" color="#1F3864">有限会社　大成住宅</font>　'
-    '<font size="10">担当：' + BL(7) + '</font><br/><br/>'
-    '<font size="15" color="#C00000">TEL　' + BL(4) + '－' + BL(3) + '－' + BL(4) + '</font><br/>'
-    '<font size="9.5" color="#333333">受付時間： ' + BL(3) + ' 時 ～ ' + BL(3) + ' 時　／　定休日： ' + BL(5) + '</font><br/>'
-    '<font size="10">メール：' + BL(14) + '</font><br/>'
-    '<font size="10">夜間・休日の緊急連絡先（水漏れ等）：' + BL(4) + '－' + BL(3) + '－' + BL(4) + '</font>',
-    S("c", fontSize=10, leading=17))]], colWidths=[CW])
-c.setStyle(TableStyle([
-    ("BACKGROUND", (0, 0), (-1, -1), LIGHT),
-    ("BOX", (0, 0), (-1, -1), 0.8, LINE),
-    ("TOPPADDING", (0, 0), (-1, -1), 11),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 11),
-    ("LEFTPADDING", (0, 0), (-1, -1), 14),
-]))
-_sec3.append(c)
-A(KeepTogether(_sec3))
+A(Paragraph("2．" + SP + "管理業務の変更日" + SP * 2 + "令和8年12月1日", st_item))
+A(Paragraph("これまでの管理会社" + SP + BL(14), st_sub))
 A(Spacer(1, 10))
-A(Paragraph("以上", st_end))
+
+# 振込先
+bank = [
+    ["金融機関名", BL(8) + " 銀行" + SP * 2 + BL(6) + " 支店"],
+    ["預金種別", "普通預金"],
+    ["口座番号", BL(10)],
+    ["口座名義", "有限会社" + SP + "大成住宅" + SP + "（ユウゲンガイシャ" + SP + "タイセイジユウタク）"],
+]
+t = Table([[Paragraph(a, st_cell), Paragraph(b, st_cell)] for a, b in bank],
+          colWidths=[32 * mm, CW - 21 * mm - 32 * mm])
+t.setStyle(TableStyle([
+    ("GRID", (0, 0), (-1, -1), 0.7, RULE),
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("TOPPADDING", (0, 0), (-1, -1), 5),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ("LEFTPADDING", (0, 0), (-1, -1), 7),
+]))
+tw = Table([[t]], colWidths=[CW])
+tw.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 21),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
+
+A(KeepTogether([
+    Paragraph("3．" + SP + "新しいお振込先（令和8年12月分のお家賃より）", st_item),
+    Spacer(1, 6),
+    tw,
+    Spacer(1, 5),
+    Paragraph(
+        "※" + SP + "お振込みの際は、依頼人名に「お部屋番号＋ご契約者名」をご記入ください。（例　101ヤマダタロウ）<br/>"
+        "※" + SP + "お支払期日は従来どおり、毎月 " + BL(2) + " 日まで（翌月分前払い）でございます。<br/>"
+        "※" + SP + "お振込手数料は、恐れ入りますが入居者様のご負担にてお願い申し上げます。", st_note),
+]))
+A(Spacer(1, 12))
+
+_c4 = [Paragraph("4．" + SP + "ご注意事項", st_item)]
+for n, txt in [
+    ("(1)", "これまでのお振込先（" + BL(9) + "）は、令和8年11月30日をもってご利用いただけません。"
+            "誤ってお振込みされた場合、返金のお手続きにお時間を頂戴いたします。"),
+    ("(2)", "銀行の自動振込（定期振込）をご利用の方は、お客様ご自身での登録変更のお手続きが必要でございます。"
+            "11月中にお手続きくださいますようお願い申し上げます。"),
+    ("(3)", "口座振替をご利用の方には、新しい口座振替依頼書を別途お送りいたします。"
+            "切替が完了いたしますまでは、上記3の口座へお振込みをお願い申し上げます。"),
+    ("(4)", "お預かりしております敷金・保証金は弊社が引き継ぎます。ご退去時の精算も弊社にて承ります。"),
+    ("(5)", "12月1日以降、水漏れ・設備の故障等のご連絡、その他お住まいに関するご相談は、"
+            "すべて弊社までお願い申し上げます。"),
+]:
+    _c4.append(Paragraph("%s%s%s" % (n, SP, txt), st_sub2))
+A(KeepTogether(_c4[:2]))
+for _f in _c4[2:]:
+    A(_f)
+A(Spacer(1, 12))
+
+A(KeepTogether([
+    Paragraph("5．" + SP + "お問い合わせ先", st_item),
+    Paragraph(
+        "有限会社" + SP + "大成住宅" + SP * 2 + "担当" + SP + BL(6) + "<br/>"
+        "電話" + SP + BL(4) + "－" + BL(3) + "－" + BL(4) + "　（受付時間　" + BL(3) + " 時 ～ " + BL(3) + " 時／定休日　" + BL(4) + "）<br/>"
+        "夜間・休日の緊急連絡先（水漏れ等）" + SP + BL(4) + "－" + BL(3) + "－" + BL(4), st_sub),
+]))
+A(Spacer(1, 14))
+A(Paragraph("以上", st_right))
 
 
-def deco(canv, doc):
-    canv.saveState()
-    canv.setStrokeColor(NAVY)
-    canv.setLineWidth(2.5)
-    canv.line(MARGIN, H - 12 * mm, W - MARGIN, H - 12 * mm)
-    canv.setFont(FP, 8)
-    canv.setFillColor(GREY)
-    canv.drawCentredString(W / 2, 10 * mm, "有限会社　大成住宅　／　管理会社変更・家賃お振込先変更のお知らせ　－　%d －" % doc.page)
-    canv.restoreState()
+def footer(canv, doc):
+    if doc.page > 1:
+        canv.saveState()
+        canv.setFont(M, 9)
+        canv.setFillColor(colors.HexColor("#555555"))
+        canv.drawCentredString(W / 2, 12 * mm, "－ %d －" % doc.page)
+        canv.restoreState()
 
 
 doc = BaseDocTemplate("管理会社変更・振込先変更のお知らせ.pdf",
-                      pagesize=A4,
-                      leftMargin=MARGIN, rightMargin=MARGIN,
-                      topMargin=16 * mm, bottomMargin=15 * mm,
-                      title="管理会社変更および家賃お振込先変更のお知らせ",
+                      pagesize=A4, leftMargin=LR, rightMargin=LR,
+                      topMargin=TOP, bottomMargin=BOT,
+                      title="建物管理業務の変更および家賃お振込先変更のお知らせ",
                       author="有限会社 大成住宅")
-frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="n",
-              leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-doc.addPageTemplates([PageTemplate(id="all", frames=[frame], onPage=deco)])
+doc.addPageTemplates([PageTemplate(id="all", onPage=footer, frames=[
+    Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="n",
+          leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)])])
 doc.build(story)
 print("OK")
