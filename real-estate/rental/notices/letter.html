@@ -1,0 +1,291 @@
+<title>大成住宅 管理変更通知状</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600&display=swap">
+<style>
+  :root {
+    /* 用紙（印刷される面）— 明るい紙と黒インク。全状態で不変 */
+    --paper: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #57534c;
+    --rule: #8c877e;
+    --blank-line: #a8a29a;
+    --ph: #a8a29a;
+    /* 机（用紙の外側）— テーマに追従 */
+    --ground: #e6e2da;
+    --ground-edge: rgba(28,26,23,.16);
+    --bar: #f7f5f1;
+    --bar-ink: #2b2823;
+    --bar-soft: #6b665e;
+    --bar-line: #d9d4ca;
+    --seal: #96331f;
+    --btn: #2b2823;
+    --btn-ink: #f7f5f1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #1b1917;
+      --ground-edge: rgba(0,0,0,.6);
+      --bar: #262320;
+      --bar-ink: #ece8e1;
+      --bar-soft: #a09a91;
+      --bar-line: #3a3631;
+      --seal: #c96a52;
+      --btn: #ece8e1;
+      --btn-ink: #262320;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #1b1917;
+    --ground-edge: rgba(0,0,0,.6);
+    --bar: #262320;
+    --bar-ink: #ece8e1;
+    --bar-soft: #a09a91;
+    --bar-line: #3a3631;
+    --seal: #c96a52;
+    --btn: #ece8e1;
+    --btn-ink: #262320;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--bar-ink);
+    font-family: system-ui, "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  }
+
+  /* ── 操作バー（印刷されない） ───────────────── */
+  .bar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    padding: 10px 16px;
+    background: var(--bar);
+    border-bottom: 1px solid var(--bar-line);
+  }
+  .bar h1 {
+    margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .04em;
+    color: var(--bar-ink);
+  }
+  .bar .hint { margin: 0; font-size: 12px; color: var(--bar-soft); flex: 1 1 240px; }
+  .bar .hint b { color: var(--seal); font-weight: 600; }
+  .bar .acts { display: flex; gap: 8px; }
+  button {
+    font: inherit; font-size: 12px; padding: 6px 14px; border-radius: 3px;
+    cursor: pointer; border: 1px solid var(--bar-line);
+    background: transparent; color: var(--bar-ink);
+  }
+  button.primary { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+  button:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+
+  /* ── 用紙 ──────────────────────────────── */
+  .stage { padding: 24px 16px 48px; display: flex; justify-content: center; }
+  .sheet {
+    width: 210mm; min-height: 297mm; box-sizing: border-box;
+    padding: 16mm 18mm 13mm;
+    background: var(--paper); color: var(--ink);
+    box-shadow: 0 2px 24px var(--ground-edge);
+    font-family: "Noto Serif JP", "Yu Mincho", YuMincho, "Hiragino Mincho ProN", "MS PMincho", serif;
+    font-size: 10.5pt; line-height: 1.6;
+    font-feature-settings: "palt" 1;
+  }
+
+  .sheet p { margin: 0; }
+  .r { text-align: right; }
+  .c { text-align: center; }
+
+  .date { text-align: right; }
+  .to { margin-top: 3.5mm; font-size: 11pt; }
+  .from { text-align: right; margin-top: 3mm; line-height: 1.75; }
+  .from .name { font-weight: 500; }
+
+  .subject {
+    margin: 5mm 0 3mm; text-align: center; text-wrap: balance;
+    font-size: 13.5pt; font-weight: 500; letter-spacing: .02em;
+  }
+
+  .letter p { text-indent: 1em; }
+  .closing { margin-top: 1mm; text-align: right; }
+  .ki { margin: 3.5mm 0 2.5mm; text-align: center; font-size: 11pt; }
+
+  /* 記書き */
+  .items { display: flex; flex-direction: column; gap: 2.5mm; }
+  .item { padding-left: 1.9em; text-indent: -1.9em; }
+  .item .n { font-variant-numeric: tabular-nums; }
+  .under { padding-left: 1.9em; font-size: 10pt; }
+
+  table {
+    width: calc(100% - 1.9em); margin-left: 1.9em; border-collapse: collapse;
+    table-layout: fixed;
+  }
+  th, td {
+    border: .7px solid var(--rule); padding: 1.2mm 2.4mm;
+    text-align: left; font-weight: 400; vertical-align: middle;
+  }
+  th { width: 30mm; }
+  .tablewrap { overflow-x: auto; }
+
+  
+  .sublist { margin-left: 1.9em; font-size: 10pt; line-height: 1.6;
+             display: flex; flex-direction: column; gap: .6mm; }
+  .sublist p { padding-left: 2.4em; text-indent: -2.4em; }
+  .sublist .n { font-variant-numeric: tabular-nums; }
+
+  .contact { margin-left: 1.9em; font-size: 10pt; line-height: 1.8; }
+  .end { margin-top: 4mm; text-align: right; }
+
+  /* ── 記入欄 ────────────────────────────── */
+  .fill {
+    display: inline-block; min-width: 3em; padding: 0 .35em;
+    border-bottom: .7px solid var(--blank-line);
+    text-indent: 0; white-space: pre-wrap;
+  }
+  .fill:empty::before { content: attr(data-ph); color: var(--ph); }
+  .fill:focus { outline: none; background: rgba(150,51,31,.08); }
+  .w-xs { min-width: 4.5em; }
+  .w-s  { min-width: 6.5em; }
+  .w-m  { min-width: 10em; }
+  .w-l  { min-width: 16em; }
+  .w-xl { min-width: 22em; }
+
+  @media (max-width: 232mm) {
+    .stage { padding: 16px 8px 32px; }
+    .sheet { width: 100%; min-height: 0; padding: 10mm; }
+  }
+
+  @media print {
+    .bar, .stage { padding: 0; }
+    .bar { display: none; }
+    body { background: var(--paper); }
+    .sheet { width: auto; min-height: 0; box-shadow: none; padding: 16mm 18mm 13mm; }
+    .fill:empty::before { color: var(--blank-line); }
+  }
+  @page { size: A4; margin: 0; }
+</style>
+
+<div class="bar">
+  <h1>管理変更通知状</h1>
+  <p class="hint">下線部は<b>クリックして直接入力</b>できます。入力内容はこのブラウザに保存されます。</p>
+  <div class="acts">
+    <button type="button" id="clear">入力をクリア</button>
+    <button type="button" class="primary" id="print">印刷 / PDF保存</button>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="sheet">
+
+    <p class="date">令和8年<span class="fill w-xs" contenteditable="true" data-k="m" data-ph="　"></span>月<span class="fill w-xs" contenteditable="true" data-k="d" data-ph="　"></span>日</p>
+
+    <p class="to">入居者各位</p>
+
+    <div class="from">
+      <p>〒<span class="fill w-s" contenteditable="true" data-k="zip" data-ph="000-0000"></span>　<span class="fill w-l" contenteditable="true" data-k="addr" data-ph="所在地"></span></p>
+      <p class="name">有限会社　大成住宅</p>
+      <p>電話　<span class="fill w-m" contenteditable="true" data-k="tel" data-ph="00-0000-0000"></span></p>
+      <p>担当　<span class="fill w-s" contenteditable="true" data-k="staff" data-ph="担当者名"></span></p>
+    </div>
+
+    <p class="subject">建物管理業務の変更および家賃お振込先変更のお知らせ</p>
+
+    <div class="letter">
+      <p>拝啓　時下ますますご清栄のこととお慶び申し上げます。平素は格別のご高配を賜り、厚く御礼申し上げます。</p>
+      <p>さて、この度、貸主様のご意向により、令和8年12月1日をもちまして、下記物件の建物管理業務を弊社が承ることとなりました。これに伴いまして、令和8年12月分のお家賃より、お振込先が下記のとおり変更となります。お手数をおかけいたしますが、お振込先の変更手続きにつきまして、何卒よろしくお願い申し上げます。</p>
+      <p>なお、賃貸借契約の内容（お家賃の額・契約期間・お支払期日等の条件）に変更はございません。今後とも安心してお住まいいただけますよう努めてまいります。</p>
+      <p>まずは略儀ながら、書面をもちましてご挨拶かたがたご案内申し上げます。</p>
+    </div>
+
+    <p class="closing">敬具</p>
+
+    <p class="ki">記</p>
+
+    <div class="items">
+
+      <p class="item"><span class="n">1．</span>物件名　<span class="fill w-xl" contenteditable="true" data-k="bldg" data-ph="物件名"></span></p>
+
+      <div>
+        <p class="item"><span class="n">2．</span>管理業務の変更日　令和8年12月1日</p>
+        <p class="under">これまでの管理会社　<span class="fill w-l" contenteditable="true" data-k="old" data-ph="旧管理会社名"></span></p>
+      </div>
+
+      <div>
+        <p class="item"><span class="n">3．</span>新しいお振込先（令和8年12月分のお家賃より）</p>
+        <div class="tablewrap">
+          <table>
+            <tbody>
+              <tr>
+                <th scope="row">金融機関名</th>
+                <td><span class="fill w-m" contenteditable="true" data-k="bank" data-ph="〇〇"></span>銀行　<span class="fill w-s" contenteditable="true" data-k="branch" data-ph="〇〇"></span>支店</td>
+              </tr>
+              <tr><th scope="row">預金種別</th><td>普通預金</td></tr>
+              <tr>
+                <th scope="row">口座番号</th>
+                <td><span class="fill w-m" contenteditable="true" data-k="acct" data-ph="0000000"></span></td>
+              </tr>
+              <tr><th scope="row">口座名義</th><td>有限会社　大成住宅　（ユウゲンガイシャ　タイセイジユウタク）</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <p class="item"><span class="n">4．</span>ご注意事項</p>
+        <div class="sublist">
+          <p><span class="n">(1)</span>　これまでのお振込先（<span class="fill w-m" contenteditable="true" data-k="oldbank" data-ph="旧口座"></span>）は、令和8年11月30日をもってご利用いただけません。誤ってお振込みされた場合、返金のお手続きにお時間を頂戴いたします。</p>
+          <p><span class="n">(2)</span>　銀行の自動振込（定期振込）をご利用の方は、お客様ご自身での登録変更のお手続きが必要でございます。11月中にお手続きくださいますようお願い申し上げます。</p>
+          <p><span class="n">(3)</span>　12月1日以降、水漏れ・設備の故障等のご連絡、その他お住まいに関するご相談は、すべて弊社までお願い申し上げます。</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="item"><span class="n">5．</span>お問い合わせ先</p>
+        <div class="contact">
+          <p>有限会社　大成住宅　担当　<span class="fill w-s" contenteditable="true" data-k="staff2" data-ph="担当者名"></span></p>
+          <p>電話　<span class="fill w-m" contenteditable="true" data-k="tel2" data-ph="00-0000-0000"></span>　（受付時間　<span class="fill w-xs" contenteditable="true" data-k="oh1" data-ph="9"></span>時 〜 <span class="fill w-xs" contenteditable="true" data-k="oh2" data-ph="18"></span>時／定休日　<span class="fill w-s" contenteditable="true" data-k="off" data-ph="水曜"></span>）</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="end">以上</p>
+  </div>
+</div>
+
+<script>
+  var KEY = "taisei-notice-v1";
+  var fields = Array.prototype.slice.call(document.querySelectorAll(".fill"));
+
+  function load() {
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { saved = {}; }
+    fields.forEach(function (el) {
+      var v = saved[el.dataset.k];
+      if (typeof v === "string") { el.textContent = v; }
+    });
+  }
+
+  function save() {
+    var data = {};
+    fields.forEach(function (el) {
+      var v = el.textContent.trim();
+      if (v) { data[el.dataset.k] = v; }
+    });
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* 保存不可でも表示は継続 */ }
+  }
+
+  fields.forEach(function (el) {
+    el.addEventListener("input", save);
+    el.addEventListener("paste", function (ev) {
+      ev.preventDefault();
+      var t = (ev.clipboardData || window.clipboardData).getData("text").replace(/\s+/g, " ");
+      document.execCommand("insertText", false, t);
+    });
+    el.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") { ev.preventDefault(); el.blur(); }
+    });
+  });
+
+  document.getElementById("print").addEventListener("click", function () { window.print(); });
+  document.getElementById("clear").addEventListener("click", function () {
+    fields.forEach(function (el) { el.textContent = ""; });
+    try { localStorage.removeItem(KEY); } catch (e) { /* 何もしない */ }
+  });
+
+  load();
+</script>

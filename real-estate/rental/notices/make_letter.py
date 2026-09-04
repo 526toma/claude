@@ -22,16 +22,16 @@ BLACK = colors.black
 RULE  = colors.HexColor("#333333")
 
 W, H   = A4
-LR     = 15 * mm
-TOP    = 11.5 * mm
-BOT    = 10 * mm
+LR     = 18 * mm
+TOP    = 16 * mm
+BOT    = 13 * mm
 CW     = W - 2 * LR
 
 def S(name, **kw):
     kw.setdefault("fontName", M)
     kw.setdefault("wordWrap", "CJK")
     kw.setdefault("fontSize", 10.5)
-    kw.setdefault("leading", kw["fontSize"] * 1.48)
+    kw.setdefault("leading", kw["fontSize"] * 1.6)
     kw.setdefault("textColor", BLACK)
     return ParagraphStyle(name, **kw)
 
@@ -39,14 +39,14 @@ st_date  = S("date",  alignment=TA_RIGHT)
 st_to    = S("to",    fontSize=11)
 st_from  = S("from",  alignment=TA_RIGHT, leading=15)
 st_title = S("title", fontSize=13.5, alignment=TA_CENTER, leading=20)
-st_body  = S("body",  leading=15.5, firstLineIndent=10.5)   # 段落一字下げ
+st_body  = S("body",  leading=16.8, firstLineIndent=10.5)   # 段落一字下げ
 st_plain = S("plain", leading=16.5)
 st_right = S("right", alignment=TA_RIGHT)
 st_ki    = S("ki",    fontSize=11, alignment=TA_CENTER, leading=16)
-st_item  = S("item",  leading=15.5, leftIndent=21, firstLineIndent=-21)  # 「1．」ぶら下げ
-st_sub   = S("sub",   fontSize=10, leading=14.8, leftIndent=21)
-st_sub2  = S("sub2",  fontSize=10, leading=14.8, leftIndent=42, firstLineIndent=-21)
-st_cell  = S("cell",  leading=13.5)
+st_item  = S("item",  leading=16.8, leftIndent=21, firstLineIndent=-21)  # 「1．」ぶら下げ
+st_sub   = S("sub",   fontSize=10, leading=16, leftIndent=21)
+st_sub2  = S("sub2",  fontSize=10, leading=16, leftIndent=42, firstLineIndent=-21)
+st_cell  = S("cell",  leading=14.5)
 st_note  = S("note",  fontSize=9.5, leading=13.5, leftIndent=21)
 
 SP = "&nbsp;&nbsp;"   # 全角一字分の空き
@@ -72,7 +72,7 @@ A(Spacer(1, 20))
 
 # ── 件名 ────────────────────────────────────────
 A(Paragraph("建物管理業務の変更および家賃お振込先変更のお知らせ", st_title))
-A(Spacer(1, 8))
+A(Spacer(1, 11))
 
 # ── 本文 ────────────────────────────────────────
 A(Paragraph(
@@ -94,7 +94,7 @@ A(Spacer(1, 14))
 
 # ── 記 ─────────────────────────────────────────
 A(Paragraph("記", st_ki))
-A(Spacer(1, 6))
+A(Spacer(1, 8))
 
 A(Paragraph("1．" + SP + "物件名" + SP * 2 + BL(15), st_item))
 A(Spacer(1, 6))
@@ -115,8 +115,8 @@ t = Table([[Paragraph(a, st_cell), Paragraph(b, st_cell)] for a, b in bank],
 t.setStyle(TableStyle([
     ("GRID", (0, 0), (-1, -1), 0.7, RULE),
     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ("TOPPADDING", (0, 0), (-1, -1), 3.5),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5),
+    ("TOPPADDING", (0, 0), (-1, -1), 4.5),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 4.5),
     ("LEFTPADDING", (0, 0), (-1, -1), 7),
 ]))
 tw = Table([[t]], colWidths=[CW])
@@ -129,11 +129,6 @@ A(KeepTogether([
     Paragraph("3．" + SP + "新しいお振込先（令和8年12月分のお家賃より）", st_item),
     Spacer(1, 4),
     tw,
-    Spacer(1, 4),
-    Paragraph(
-        "※" + SP + "お振込みの際は、依頼人名に「お部屋番号＋ご契約者名」をご記入ください。（例　101ヤマダタロウ）<br/>"
-        "※" + SP + "お支払期日は従来どおり、毎月 " + BL(2) + " 日まで（翌月分前払い）でございます。<br/>"
-        "※" + SP + "お振込手数料は、恐れ入りますが入居者様のご負担にてお願い申し上げます。", st_note),
 ]))
 A(Spacer(1, 8))
 
@@ -143,10 +138,7 @@ for n, txt in [
             "誤ってお振込みされた場合、返金のお手続きにお時間を頂戴いたします。"),
     ("(2)", "銀行の自動振込（定期振込）をご利用の方は、お客様ご自身での登録変更のお手続きが必要でございます。"
             "11月中にお手続きくださいますようお願い申し上げます。"),
-    ("(3)", "口座振替をご利用の方には、新しい口座振替依頼書を別途お送りいたします。"
-            "切替が完了いたしますまでは、上記3の口座へお振込みをお願い申し上げます。"),
-    ("(4)", "お預かりしております敷金・保証金は弊社が引き継ぎます。ご退去時の精算も弊社にて承ります。"),
-    ("(5)", "12月1日以降、水漏れ・設備の故障等のご連絡、その他お住まいに関するご相談は、"
+    ("(3)", "12月1日以降、水漏れ・設備の故障等のご連絡、その他お住まいに関するご相談は、"
             "すべて弊社までお願い申し上げます。"),
 ]:
     _c4.append(Paragraph("%s%s%s" % (n, SP, txt), st_sub2))
@@ -159,8 +151,7 @@ A(KeepTogether([
     Paragraph("5．" + SP + "お問い合わせ先", st_item),
     Paragraph(
         "有限会社" + SP + "大成住宅" + SP * 2 + "担当" + SP + BL(6) + "<br/>"
-        "電話" + SP + BL(4) + "－" + BL(3) + "－" + BL(4) + "　（受付時間　" + BL(3) + " 時 ～ " + BL(3) + " 時／定休日　" + BL(4) + "）<br/>"
-        "夜間・休日の緊急連絡先（水漏れ等）" + SP + BL(4) + "－" + BL(3) + "－" + BL(4), st_sub),
+        "電話" + SP + BL(4) + "－" + BL(3) + "－" + BL(4) + "　（受付時間　" + BL(3) + " 時 ～ " + BL(3) + " 時／定休日　" + BL(4) + "）", st_sub),
 ]))
 A(Spacer(1, 9))
 A(Paragraph("以上", st_right))
