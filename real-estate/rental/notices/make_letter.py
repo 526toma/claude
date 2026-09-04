@@ -22,32 +22,32 @@ BLACK = colors.black
 RULE  = colors.HexColor("#333333")
 
 W, H   = A4
-LR     = 25 * mm
-TOP    = 22 * mm
-BOT    = 20 * mm
+LR     = 15 * mm
+TOP    = 11.5 * mm
+BOT    = 10 * mm
 CW     = W - 2 * LR
 
 def S(name, **kw):
     kw.setdefault("fontName", M)
     kw.setdefault("wordWrap", "CJK")
     kw.setdefault("fontSize", 10.5)
-    kw.setdefault("leading", kw["fontSize"] * 1.75)
+    kw.setdefault("leading", kw["fontSize"] * 1.48)
     kw.setdefault("textColor", BLACK)
     return ParagraphStyle(name, **kw)
 
 st_date  = S("date",  alignment=TA_RIGHT)
 st_to    = S("to",    fontSize=11)
-st_from  = S("from",  alignment=TA_RIGHT, leading=17)
-st_title = S("title", fontSize=14, alignment=TA_CENTER, leading=24)
-st_body  = S("body",  leading=19, firstLineIndent=10.5)   # 段落一字下げ
-st_plain = S("plain", leading=19)
+st_from  = S("from",  alignment=TA_RIGHT, leading=15)
+st_title = S("title", fontSize=13.5, alignment=TA_CENTER, leading=20)
+st_body  = S("body",  leading=15.5, firstLineIndent=10.5)   # 段落一字下げ
+st_plain = S("plain", leading=16.5)
 st_right = S("right", alignment=TA_RIGHT)
-st_ki    = S("ki",    fontSize=11, alignment=TA_CENTER, leading=20)
-st_item  = S("item",  leading=18, leftIndent=21, firstLineIndent=-21)  # 「1．」ぶら下げ
-st_sub   = S("sub",   fontSize=10, leading=17, leftIndent=21)
-st_sub2  = S("sub2",  fontSize=10, leading=17, leftIndent=42, firstLineIndent=-21)
-st_cell  = S("cell",  leading=16)
-st_note  = S("note",  fontSize=9.5, leading=15.5, leftIndent=21)
+st_ki    = S("ki",    fontSize=11, alignment=TA_CENTER, leading=16)
+st_item  = S("item",  leading=15.5, leftIndent=21, firstLineIndent=-21)  # 「1．」ぶら下げ
+st_sub   = S("sub",   fontSize=10, leading=14.8, leftIndent=21)
+st_sub2  = S("sub2",  fontSize=10, leading=14.8, leftIndent=42, firstLineIndent=-21)
+st_cell  = S("cell",  leading=13.5)
+st_note  = S("note",  fontSize=9.5, leading=13.5, leftIndent=21)
 
 SP = "&nbsp;&nbsp;"   # 全角一字分の空き
 
@@ -60,9 +60,9 @@ A = story.append
 
 # ── 日付・宛名・差出人 ─────────────────────────────
 A(Paragraph("令和8年　" + BL(2) + " 月 " + BL(2) + " 日", st_date))
-A(Spacer(1, 14))
+A(Spacer(1, 10))
 A(Paragraph("入居者各位", st_to))
-A(Spacer(1, 12))
+A(Spacer(1, 9))
 A(Paragraph(
     "〒" + BL(3) + "－" + BL(4) + "　" + BL(13) + "<br/>"
     "有限会社　大成住宅<br/>"
@@ -72,7 +72,7 @@ A(Spacer(1, 20))
 
 # ── 件名 ────────────────────────────────────────
 A(Paragraph("建物管理業務の変更および家賃お振込先変更のお知らせ", st_title))
-A(Spacer(1, 16))
+A(Spacer(1, 8))
 
 # ── 本文 ────────────────────────────────────────
 A(Paragraph(
@@ -88,20 +88,20 @@ A(Paragraph(
     "今後とも安心してお住まいいただけますよう努めてまいります。", st_body))
 A(Paragraph(
     "まずは略儀ながら、書面をもちましてご挨拶かたがたご案内申し上げます。", st_body))
-A(Spacer(1, 6))
+A(Spacer(1, 3))
 A(Paragraph("敬具", st_right))
 A(Spacer(1, 14))
 
 # ── 記 ─────────────────────────────────────────
 A(Paragraph("記", st_ki))
-A(Spacer(1, 12))
+A(Spacer(1, 6))
 
 A(Paragraph("1．" + SP + "物件名" + SP * 2 + BL(15), st_item))
-A(Spacer(1, 8))
+A(Spacer(1, 6))
 
 A(Paragraph("2．" + SP + "管理業務の変更日" + SP * 2 + "令和8年12月1日", st_item))
 A(Paragraph("これまでの管理会社" + SP + BL(14), st_sub))
-A(Spacer(1, 10))
+A(Spacer(1, 7))
 
 # 振込先
 bank = [
@@ -115,8 +115,8 @@ t = Table([[Paragraph(a, st_cell), Paragraph(b, st_cell)] for a, b in bank],
 t.setStyle(TableStyle([
     ("GRID", (0, 0), (-1, -1), 0.7, RULE),
     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ("TOPPADDING", (0, 0), (-1, -1), 5),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ("TOPPADDING", (0, 0), (-1, -1), 3.5),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5),
     ("LEFTPADDING", (0, 0), (-1, -1), 7),
 ]))
 tw = Table([[t]], colWidths=[CW])
@@ -127,15 +127,15 @@ tw.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 21),
 
 A(KeepTogether([
     Paragraph("3．" + SP + "新しいお振込先（令和8年12月分のお家賃より）", st_item),
-    Spacer(1, 6),
+    Spacer(1, 4),
     tw,
-    Spacer(1, 5),
+    Spacer(1, 4),
     Paragraph(
         "※" + SP + "お振込みの際は、依頼人名に「お部屋番号＋ご契約者名」をご記入ください。（例　101ヤマダタロウ）<br/>"
         "※" + SP + "お支払期日は従来どおり、毎月 " + BL(2) + " 日まで（翌月分前払い）でございます。<br/>"
         "※" + SP + "お振込手数料は、恐れ入りますが入居者様のご負担にてお願い申し上げます。", st_note),
 ]))
-A(Spacer(1, 12))
+A(Spacer(1, 8))
 
 _c4 = [Paragraph("4．" + SP + "ご注意事項", st_item)]
 for n, txt in [
@@ -153,7 +153,7 @@ for n, txt in [
 A(KeepTogether(_c4[:2]))
 for _f in _c4[2:]:
     A(_f)
-A(Spacer(1, 12))
+A(Spacer(1, 8))
 
 A(KeepTogether([
     Paragraph("5．" + SP + "お問い合わせ先", st_item),
@@ -162,7 +162,7 @@ A(KeepTogether([
         "電話" + SP + BL(4) + "－" + BL(3) + "－" + BL(4) + "　（受付時間　" + BL(3) + " 時 ～ " + BL(3) + " 時／定休日　" + BL(4) + "）<br/>"
         "夜間・休日の緊急連絡先（水漏れ等）" + SP + BL(4) + "－" + BL(3) + "－" + BL(4), st_sub),
 ]))
-A(Spacer(1, 14))
+A(Spacer(1, 9))
 A(Paragraph("以上", st_right))
 
 
